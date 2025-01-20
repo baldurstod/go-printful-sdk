@@ -49,7 +49,6 @@ func TestGetProducts(t *testing.T) {
 	var done = 0
 	for i := 1; i <= 130; i++ {
 		wg.Add(1)
-		//time.Sleep(10 * time.Millisecond)
 
 		go func() {
 			defer wg.Done()

@@ -33,20 +33,6 @@ type PrintfulClient struct {
 	sem           *semaphore.Weighted
 }
 
-type rateLimitError struct {
-	err string
-}
-type timeoutError struct {
-	err string
-}
-
-func (e *rateLimitError) Error() string {
-	return "error 429"
-}
-func (e *timeoutError) Error() string {
-	return "timeout"
-}
-
 func NewPrintfulClient(accessToken string) *PrintfulClient {
 	return &PrintfulClient{
 		accessToken: accessToken,
@@ -57,21 +43,23 @@ func NewPrintfulClient(accessToken string) *PrintfulClient {
 	}
 }
 
+// Change access token. Any queued request still uses the old token
 func (c *PrintfulClient) SetAccessToken(accessToken string) {
 	c.accessToken = accessToken
 }
 
-func (c *PrintfulClient) get(endpoint string, path string, headers map[string]string) (*http.Response, error) {
-	return c.fetch("GET", endpoint, path, headers, nil)
+func (c *PrintfulClient) get(endpoint string, path string, headers map[string]string, ctx context.Context) (*http.Response, error) {
+	return c.fetch("GET", endpoint, path, headers, nil, ctx)
 }
 
-func (c *PrintfulClient) post(endpoint string, path string, headers map[string]string, body map[string]interface{}) (*http.Response, error) {
-	return c.fetch("POST", endpoint, path, headers, body)
+func (c *PrintfulClient) post(endpoint string, path string, headers map[string]string, body map[string]interface{}, ctx context.Context) (*http.Response, error) {
+	return c.fetch("POST", endpoint, path, headers, body, ctx)
 }
 
-func (c *PrintfulClient) fetch(method string, endpoint string, path string, headers map[string]string, body map[string]interface{}) (*http.Response, error) {
-	//ctx, _ := context.WithTimeout(context.Background(), time.Duration(time.Second*30))
-	ctx := context.Background()
+func (c *PrintfulClient) fetch(method string, endpoint string, path string, headers map[string]string, body map[string]interface{}, ctx context.Context) (*http.Response, error) {
+	if ctx == nil {
+		ctx = context.Background()
+	}
 
 	var limiter *rate.Limiter
 
@@ -108,49 +96,55 @@ func (c *PrintfulClient) fetch(method string, endpoint string, path string, head
 	// Adding OAuth token
 	req.Header.Add("Authorization", "Bearer "+c.accessToken)
 
-	// Wait for a rate limit token
-	err = limiter.Wait(ctx)
-	if err != nil {
-		return nil, &timeoutError{}
-	}
+	var header http.Header
+	for i := 0; i < 10; i++ {
+		// Wait for a rate limit token
+		err = limiter.Wait(ctx)
+		if err != nil {
+			return nil, err
+		}
 
-	resp, err = http.DefaultClient.Do(req)
-	if err != nil {
-		return nil, err
-	}
+		resp, err = http.DefaultClient.Do(req)
+		if err != nil {
+			return nil, err
+		}
 
-	header := resp.Header
+		header = resp.Header
 
-	if remaining, err := strconv.Atoi(header.Get("X-RateLimit-Remaining")); err == nil {
-		tokens := int(limiter.Tokens())
-		if tokens > remaining {
-			// Synchronize limiter
-			limiter.ReserveN(time.Now(), tokens-remaining)
-			fmt.Println("reserving tokens", tokens-remaining)
+		// Check remaining tokens
+		if remaining, err := strconv.Atoi(header.Get("X-RateLimit-Remaining")); err == nil {
+			tokens := int(limiter.Tokens())
+			if tokens > remaining {
+				// Synchronize limiter
+				limiter.ReserveN(time.Now(), tokens-remaining)
+			}
+		}
+
+		r := getRateFromPolicy(header.Get("X-RateLimit-Policy"))
+		if r > 0 {
+			limiter.SetLimit(rate.Limit(r))
+		}
+
+		if resp.StatusCode != 429 {
+			// Exit the loop unless we have a code 429 Too Many Requests
+			break
 		}
 	}
 
-	if resp.StatusCode == 429 { //Too Many Requests
-		fmt.Println("429", endpoint, header.Get("X-RateLimit-Remaining"), header.Get("X-RateLimit-Reset"), header.Get("X-RateLimit-Limit"), header.Get("X-RateLimit-Policy"), header.Get("retry-after"))
-		return nil, &rateLimitError{}
-	}
-
 	if resp.StatusCode != 200 { //Everything except 429 and 200
+		if resp.StatusCode == 429 { //Too Many Requests
+			fmt.Println("429", endpoint, header.Get("X-RateLimit-Remaining"), header.Get("X-RateLimit-Reset"), header.Get("X-RateLimit-Limit"), header.Get("X-RateLimit-Policy"), header.Get("retry-after"))
+		}
 		return nil, fmt.Errorf("printful returned HTTP status code: %d", resp.StatusCode)
 	}
 
-	remaining := header.Get("X-RateLimit-Remaining")
-	fmt.Println("remaining", endpoint, header.Get("X-RateLimit-Remaining"), header.Get("X-RateLimit-Reset"), header.Get("X-RateLimit-Limit"))
-	if remaining == "" {
-		return resp, err
-	}
+	//fmt.Println("remaining", endpoint, header.Get("X-RateLimit-Remaining"), header.Get("X-RateLimit-Reset"), header.Get("X-RateLimit-Limit"))
 
 	return resp, err
 }
 
 func (c *PrintfulClient) GetCatalogProducts(opts ...requestOption) error {
-
-	resp, err := c.get(PRINTFUL_CATALOG_ENDPOINT, "", nil)
+	resp, err := c.get(PRINTFUL_CATALOG_ENDPOINT, "", nil, nil)
 	if err != nil {
 		log.Println(err)
 		return errors.New("unable to get printful response")
@@ -167,7 +161,7 @@ func (c *PrintfulClient) GetCatalogProducts(opts ...requestOption) error {
 }
 
 func (c *PrintfulClient) GetCountries(opts ...requestOption) error {
-	resp, err := c.get(PRINTFUL_COUNTRIES_ENDPOINT, "", nil)
+	resp, err := c.get(PRINTFUL_COUNTRIES_ENDPOINT, "", nil, nil)
 	if err != nil {
 		log.Println(err)
 		return errors.New("unable to get printful response")
