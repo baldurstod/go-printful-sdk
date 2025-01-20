@@ -78,7 +78,7 @@ func TestGetProducts(t *testing.T) {
 
 	client := printfulapi.NewPrintfulClient(token)
 
-	products, err := client.GetCatalogProducts(printfulapi.WithLimit(100) /*, printfulapi.WithTimeout(5*time.Second)*/)
+	products, err := client.GetCatalogProducts( /*printfulapi.WithLimit(100)*/ /*, printfulapi.WithTimeout(5*time.Second)*/ )
 	if err != nil {
 		t.Error(err)
 		return
@@ -104,7 +104,7 @@ func TestGetCountries(t *testing.T) {
 
 	client := printfulapi.NewPrintfulClient(token)
 
-	countries, err := client.GetCountries(printfulapi.WithLimit(100) /*, printfulapi.WithTimeout(5*time.Second)*/)
+	countries, err := client.GetCountries( /*printfulapi.WithLimit(100)*/ /*, printfulapi.WithTimeout(5*time.Second)*/ )
 	if err != nil {
 		t.Error(err)
 		return

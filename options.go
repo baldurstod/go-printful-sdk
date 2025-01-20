@@ -47,6 +47,7 @@ type options struct {
 
 type requestOption func(*options)
 
+/*
 func WithOffset(offset uint) requestOption {
 	return func(o *options) {
 		o.offset = offset
@@ -55,13 +56,10 @@ func WithOffset(offset uint) requestOption {
 
 func WithLimit(limit uint) requestOption {
 	return func(o *options) {
-		if limit <= 100 {
-			o.limit = limit
-		} else {
-			o.limit = 100
-		}
+		o.limit = limit
 	}
 }
+*/
 
 func WithCategories(categories ...int) requestOption {
 	return func(o *options) {
@@ -125,7 +123,7 @@ func WithTimeout(timeout time.Duration) requestOption {
 
 func getOptions(opts ...requestOption) options {
 	cfg := options{
-		limit:   20,
+		limit:   0,
 		timeout: time.Duration(-1),
 	}
 	for _, fn := range opts {

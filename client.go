@@ -14,6 +14,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/baldurstod/go-printful-api/model"
 	"github.com/baldurstod/go-printful-api/model/responses"
 	"golang.org/x/sync/semaphore"
 	"golang.org/x/time/rate"
@@ -196,11 +197,10 @@ func (c *PrintfulClient) GetCatalogProducts(opts ...requestOption) (map[string]i
 	return response, nil
 }
 
-func (c *PrintfulClient) GetCountries(opts ...requestOption) (*responses.CountriesResponse, error) {
+func (c *PrintfulClient) GetCountries(opts ...requestOption) ([]model.Country, error) {
 	opt := getOptions(opts...)
 
-	u, _ := buildURL(PRINTFUL_COUNTRIES, opt)
-	fmt.Println(u)
+	countries := make([]model.Country, 0)
 
 	var ctx context.Context
 	var cancel context.CancelFunc
@@ -209,18 +209,34 @@ func (c *PrintfulClient) GetCountries(opts ...requestOption) (*responses.Countri
 		defer cancel()
 	}
 
-	resp, err := c.get(u, nil, ctx)
-	if err != nil {
-		log.Println(err)
-		return nil, errors.New("unable to get printful response")
+	opt.offset = 0
+	opt.limit = 100
+
+	for {
+		u, _ := buildURL(PRINTFUL_COUNTRIES, opt)
+		fmt.Println(u)
+		resp, err := c.get(u, nil, ctx)
+		if err != nil {
+			log.Println(err)
+			return nil, errors.New("unable to get printful response")
+		}
+
+		response := &responses.CountriesResponse{}
+		err = json.NewDecoder(resp.Body).Decode(&response)
+		if err != nil {
+			log.Println(err)
+			return nil, errors.New("unable to decode printful response")
+		}
+
+		countries = append(countries, response.Data...)
+
+		next := response.Paging.Offset + response.Paging.Limit
+		if next >= response.Paging.Total {
+			break
+		}
+		opt.offset = next
+		opt.limit = response.Paging.Limit
 	}
 
-	response := &responses.CountriesResponse{}
-	err = json.NewDecoder(resp.Body).Decode(&response)
-	if err != nil {
-		log.Println(err)
-		return nil, errors.New("unable to decode printful response")
-	}
-
-	return response, nil
+	return countries, nil
 }
