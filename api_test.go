@@ -92,3 +92,29 @@ func TestGetProducts(t *testing.T) {
 		return
 	}
 }
+
+func TestGetCountries(t *testing.T) {
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
+
+	token, err := getAuthToken()
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	client := printfulapi.NewPrintfulClient(token)
+
+	countries, err := client.GetCountries(printfulapi.WithLimit(100) /*, printfulapi.WithTimeout(5*time.Second)*/)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	j, _ := json.MarshalIndent(&countries, "", "\t")
+
+	err = os.WriteFile("./var/countries.json", j, 0666)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+}

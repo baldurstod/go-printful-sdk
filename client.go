@@ -14,6 +14,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/baldurstod/go-printful-api/model/responses"
 	"golang.org/x/sync/semaphore"
 	"golang.org/x/time/rate"
 )
@@ -193,7 +194,7 @@ func (c *PrintfulClient) GetCatalogProducts(opts ...requestOption) (map[string]i
 	return response, nil
 }
 
-func (c *PrintfulClient) GetCountries(opts ...requestOption) error {
+func (c *PrintfulClient) GetCountries(opts ...requestOption) (*responses.CountriesResponse, error) {
 	opt := getOptions(opts...)
 
 	u, _ := buildURL(PRINTFUL_COUNTRIES, opt)
@@ -207,15 +208,15 @@ func (c *PrintfulClient) GetCountries(opts ...requestOption) error {
 	resp, err := c.get(u, nil, ctx)
 	if err != nil {
 		log.Println(err)
-		return errors.New("unable to get printful response")
+		return nil, errors.New("unable to get printful response")
 	}
 
-	response := make(map[string]interface{})
+	response := &responses.CountriesResponse{}
 	err = json.NewDecoder(resp.Body).Decode(&response)
 	if err != nil {
 		log.Println(err)
-		return errors.New("unable to decode printful response")
+		return nil, errors.New("unable to decode printful response")
 	}
 
-	return nil
+	return response, nil
 }
