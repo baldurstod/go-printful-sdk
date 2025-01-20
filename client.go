@@ -144,7 +144,14 @@ func (c *PrintfulClient) fetch(method string, endpoint string, path string, head
 }
 
 func (c *PrintfulClient) GetCatalogProducts(opts ...requestOption) error {
-	resp, err := c.get(PRINTFUL_CATALOG_ENDPOINT, "", nil, nil)
+	opt := getOptions(opts...)
+
+	var ctx context.Context
+	if opt.timeout > 0 {
+		ctx, _ = context.WithTimeout(context.Background(), opt.timeout)
+	}
+
+	resp, err := c.get(PRINTFUL_CATALOG_ENDPOINT, "", nil, ctx)
 	if err != nil {
 		log.Println(err)
 		return errors.New("unable to get printful response")
@@ -161,7 +168,14 @@ func (c *PrintfulClient) GetCatalogProducts(opts ...requestOption) error {
 }
 
 func (c *PrintfulClient) GetCountries(opts ...requestOption) error {
-	resp, err := c.get(PRINTFUL_COUNTRIES_ENDPOINT, "", nil, nil)
+	opt := getOptions(opts...)
+
+	var ctx context.Context
+	if opt.timeout > 0 {
+		ctx, _ = context.WithTimeout(context.Background(), opt.timeout)
+	}
+
+	resp, err := c.get(PRINTFUL_COUNTRIES_ENDPOINT, "", nil, ctx)
 	if err != nil {
 		log.Println(err)
 		return errors.New("unable to get printful response")

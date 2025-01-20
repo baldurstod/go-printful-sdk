@@ -1,5 +1,7 @@
 package printfulapi
 
+import "time"
+
 type SortDirection string
 
 const (
@@ -40,6 +42,7 @@ type options struct {
 	sortDirection SortDirection
 	sortType      SortType
 	language      string
+	timeout       time.Duration
 }
 
 type requestOption func(*options)
@@ -112,4 +115,22 @@ func WithLanguage(language string) requestOption {
 	return func(o *options) {
 		o.language = language
 	}
+}
+
+func WithTimeout(timeout time.Duration) requestOption {
+	return func(o *options) {
+		o.timeout = timeout
+	}
+}
+
+func getOptions(opts ...requestOption) options {
+	cfg := options{
+		limit:   100,
+		timeout: time.Duration(-1),
+	}
+	for _, fn := range opts {
+		fn(&cfg)
+	}
+
+	return cfg
 }
