@@ -11,16 +11,18 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+	"strings"
 	"time"
 
 	"golang.org/x/sync/semaphore"
 	"golang.org/x/time/rate"
 )
 
-const PRINTFUL_CATALOG_ENDPOINT = "https://api.printful.com/v2/catalog-products"
+const PRINTFUL_CATALOG_PRODUCTS = "https://api.printful.com/v2/catalog-products"
+const PRINTFUL_CATALOG_VARIANTS = "https://api.printful.com/v2/catalog-variants"
 const PRINTFUL_ORDERS_ENDPOINT = "https://api.printful.com/v2/orders"
 const PRINTFUL_FILES_ENDPOINT = "https://api.printful.com/v2/files"
-const PRINTFUL_COUNTRIES_ENDPOINT = "https://api.printful.com/v2/countries"
+const PRINTFUL_COUNTRIES = "https://api.printful.com/v2/countries"
 const PRINTFUL_SHIPPING_RATES_ENDPOINT = "https://api.printful.com/v2/shipping-rates"
 const PRINTFUL_MOCKUP_ENDPOINT = "https://api.printful.com/v2/mockup-tasks"
 const PRINTFUL_STORES_ENDPOINT = "https://api.printful.com/v2/stores"
@@ -48,31 +50,33 @@ func (c *PrintfulClient) SetAccessToken(accessToken string) {
 	c.accessToken = accessToken
 }
 
-func (c *PrintfulClient) get(endpoint string, path string, headers map[string]string, ctx context.Context) (*http.Response, error) {
-	return c.fetch("GET", endpoint, path, headers, nil, ctx)
+func (c *PrintfulClient) get(path string, headers map[string]string, ctx context.Context) (*http.Response, error) {
+	return c.fetch("GET", path, headers, nil, ctx)
 }
 
-func (c *PrintfulClient) post(endpoint string, path string, headers map[string]string, body map[string]interface{}, ctx context.Context) (*http.Response, error) {
-	return c.fetch("POST", endpoint, path, headers, body, ctx)
+func (c *PrintfulClient) post(path string, headers map[string]string, body map[string]interface{}, ctx context.Context) (*http.Response, error) {
+	return c.fetch("POST", path, headers, body, ctx)
 }
 
-func (c *PrintfulClient) fetch(method string, endpoint string, path string, headers map[string]string, body map[string]interface{}, ctx context.Context) (*http.Response, error) {
+func (c *PrintfulClient) fetch(method string, path string, headers map[string]string, body map[string]interface{}, ctx context.Context) (*http.Response, error) {
 	if ctx == nil {
 		ctx = context.Background()
 	}
 
 	var limiter *rate.Limiter
 
-	if method == "POST" && endpoint == PRINTFUL_MOCKUP_ENDPOINT {
+	if method == "POST" && strings.HasPrefix(path, PRINTFUL_MOCKUP_ENDPOINT) {
 		limiter = c.mockupLimiter
 	} else {
 		limiter = c.stdLimiter
 	}
 
-	u, err := url.JoinPath(endpoint, path)
-	if err != nil {
-		return nil, errors.New("unable to create URL")
-	}
+	//u, err := url.parse(endpoint, path)
+	/*
+		if err != nil {
+			return nil, errors.New("unable to create URL")
+		}
+	*/
 
 	var requestBody io.Reader
 	if body != nil {
@@ -84,7 +88,7 @@ func (c *PrintfulClient) fetch(method string, endpoint string, path string, head
 	}
 
 	var resp *http.Response
-	req, err := http.NewRequestWithContext(ctx, method, u, requestBody)
+	req, err := http.NewRequestWithContext(ctx, method, path, requestBody)
 	if err != nil {
 		return nil, err
 	}
@@ -133,7 +137,7 @@ func (c *PrintfulClient) fetch(method string, endpoint string, path string, head
 
 	if resp.StatusCode != 200 { //Everything except 429 and 200
 		if resp.StatusCode == 429 { //Too Many Requests
-			fmt.Println("429", endpoint, header.Get("X-RateLimit-Remaining"), header.Get("X-RateLimit-Reset"), header.Get("X-RateLimit-Limit"), header.Get("X-RateLimit-Policy"), header.Get("retry-after"))
+			fmt.Println("429", path, header.Get("X-RateLimit-Remaining"), header.Get("X-RateLimit-Reset"), header.Get("X-RateLimit-Limit"), header.Get("X-RateLimit-Policy"), header.Get("retry-after"))
 		}
 		return nil, fmt.Errorf("printful returned HTTP status code: %d", resp.StatusCode)
 	}
@@ -143,39 +147,64 @@ func (c *PrintfulClient) fetch(method string, endpoint string, path string, head
 	return resp, err
 }
 
-func (c *PrintfulClient) GetCatalogProducts(opts ...requestOption) error {
+func buildURL(path string, o options) (string, error) {
+	u, err := url.ParseRequestURI(path)
+	q := url.Values{}
+	if err != nil {
+		return "", err
+	}
+
+	if o.limit != 0 {
+		q.Set("limit", strconv.Itoa(int(o.limit)))
+	}
+
+	if o.offset != 0 {
+		q.Set("offset", strconv.Itoa(int(o.offset)))
+	}
+
+	u.RawQuery = q.Encode()
+	return u.String(), nil
+}
+
+func (c *PrintfulClient) GetCatalogProducts(opts ...requestOption) (map[string]interface{}, error) {
 	opt := getOptions(opts...)
+
+	u, _ := buildURL(PRINTFUL_CATALOG_PRODUCTS, opt)
+	fmt.Println(u)
 
 	var ctx context.Context
 	if opt.timeout > 0 {
 		ctx, _ = context.WithTimeout(context.Background(), opt.timeout)
 	}
 
-	resp, err := c.get(PRINTFUL_CATALOG_ENDPOINT, "", nil, ctx)
+	resp, err := c.get(u, nil, ctx)
 	if err != nil {
 		log.Println(err)
-		return errors.New("unable to get printful response")
+		return nil, errors.New("unable to get printful response")
 	}
 
 	response := make(map[string]interface{})
 	err = json.NewDecoder(resp.Body).Decode(&response)
 	if err != nil {
 		log.Println(err)
-		return errors.New("unable to decode printful response")
+		return nil, errors.New("unable to decode printful response")
 	}
 
-	return nil
+	return response, nil
 }
 
 func (c *PrintfulClient) GetCountries(opts ...requestOption) error {
 	opt := getOptions(opts...)
+
+	u, _ := buildURL(PRINTFUL_COUNTRIES, opt)
+	fmt.Println(u)
 
 	var ctx context.Context
 	if opt.timeout > 0 {
 		ctx, _ = context.WithTimeout(context.Background(), opt.timeout)
 	}
 
-	resp, err := c.get(PRINTFUL_COUNTRIES_ENDPOINT, "", nil, ctx)
+	resp, err := c.get(u, nil, ctx)
 	if err != nil {
 		log.Println(err)
 		return errors.New("unable to get printful response")

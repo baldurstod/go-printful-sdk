@@ -125,7 +125,7 @@ func WithTimeout(timeout time.Duration) requestOption {
 
 func getOptions(opts ...requestOption) options {
 	cfg := options{
-		limit:   100,
+		limit:   20,
 		timeout: time.Duration(-1),
 	}
 	for _, fn := range opts {
