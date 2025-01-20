@@ -47,7 +47,6 @@ type options struct {
 
 type requestOption func(*options)
 
-/*
 func WithOffset(offset uint) requestOption {
 	return func(o *options) {
 		o.offset = offset
@@ -59,7 +58,6 @@ func WithLimit(limit uint) requestOption {
 		o.limit = limit
 	}
 }
-*/
 
 func WithCategories(categories ...int) requestOption {
 	return func(o *options) {

@@ -168,11 +168,10 @@ func buildURL(path string, o options) (string, error) {
 	return u.String(), nil
 }
 
-func (c *PrintfulClient) GetCatalogProducts(opts ...requestOption) (map[string]interface{}, error) {
+func (c *PrintfulClient) GetCatalogProducts(opts ...requestOption) ([]model.Product, error) {
 	opt := getOptions(opts...)
 
-	u, _ := buildURL(PRINTFUL_CATALOG_PRODUCTS, opt)
-	fmt.Println(u)
+	products := make([]model.Product, 0)
 
 	var ctx context.Context
 	var cancel context.CancelFunc
@@ -181,20 +180,37 @@ func (c *PrintfulClient) GetCatalogProducts(opts ...requestOption) (map[string]i
 		defer cancel()
 	}
 
-	resp, err := c.get(u, nil, ctx)
-	if err != nil {
-		log.Println(err)
-		return nil, errors.New("unable to get printful response")
+	opt.offset = 0
+	opt.limit = 100
+
+	for {
+
+		u, _ := buildURL(PRINTFUL_CATALOG_PRODUCTS, opt)
+		fmt.Println(u)
+		resp, err := c.get(u, nil, ctx)
+		if err != nil {
+			log.Println(err)
+			return nil, errors.New("unable to get printful response")
+		}
+
+		response := &responses.ProductsResponse{}
+		err = json.NewDecoder(resp.Body).Decode(&response)
+		if err != nil {
+			log.Println(err)
+			return nil, errors.New("unable to decode printful response")
+		}
+
+		products = append(products, response.Data...)
+
+		next := response.Paging.Offset + response.Paging.Limit
+		if next >= response.Paging.Total {
+			break
+		}
+		opt.offset = next
+		opt.limit = response.Paging.Limit
 	}
 
-	response := make(map[string]interface{})
-	err = json.NewDecoder(resp.Body).Decode(&response)
-	if err != nil {
-		log.Println(err)
-		return nil, errors.New("unable to decode printful response")
-	}
-
-	return response, nil
+	return products, nil
 }
 
 func (c *PrintfulClient) GetCountries(opts ...requestOption) ([]model.Country, error) {

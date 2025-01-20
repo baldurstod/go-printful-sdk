@@ -1,13 +1,11 @@
 package responses
 
-type Links struct {
-	Self     Link `json:"self" bson:"self" mapstructure:"self"`
-	Next     Link `json:"next" bson:"next" mapstructure:"next"`
-	Previous Link `json:"previous" bson:"previous" mapstructure:"previous"`
-	First    Link `json:"first" bson:"first" mapstructure:"first"`
-	Last     Link `json:"last" bson:"last" mapstructure:"last"`
-}
+import model "github.com/baldurstod/go-printful-api/model"
 
-type Link struct {
-	Href string `json:"href" bson:"href" mapstructure:"href"`
+type Links struct {
+	Self     model.Link `json:"self" bson:"self" mapstructure:"self"`
+	Next     model.Link `json:"next" bson:"next" mapstructure:"next"`
+	Previous model.Link `json:"previous" bson:"previous" mapstructure:"previous"`
+	First    model.Link `json:"first" bson:"first" mapstructure:"first"`
+	Last     model.Link `json:"last" bson:"last" mapstructure:"last"`
 }
