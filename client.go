@@ -174,8 +174,10 @@ func (c *PrintfulClient) GetCatalogProducts(opts ...requestOption) (map[string]i
 	fmt.Println(u)
 
 	var ctx context.Context
+	var cancel context.CancelFunc
 	if opt.timeout > 0 {
-		ctx, _ = context.WithTimeout(context.Background(), opt.timeout)
+		ctx, cancel = context.WithTimeout(context.Background(), opt.timeout)
+		defer cancel()
 	}
 
 	resp, err := c.get(u, nil, ctx)
@@ -201,8 +203,10 @@ func (c *PrintfulClient) GetCountries(opts ...requestOption) (*responses.Countri
 	fmt.Println(u)
 
 	var ctx context.Context
+	var cancel context.CancelFunc
 	if opt.timeout > 0 {
-		ctx, _ = context.WithTimeout(context.Background(), opt.timeout)
+		ctx, cancel = context.WithTimeout(context.Background(), opt.timeout)
+		defer cancel()
 	}
 
 	resp, err := c.get(u, nil, ctx)
