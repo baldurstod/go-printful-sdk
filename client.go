@@ -139,12 +139,12 @@ func (c *PrintfulClient) fetch(method string, path string, headers map[string]st
 
 	if resp.StatusCode != 200 { //Everything except 429 and 200
 		if resp.StatusCode == 429 { //Too Many Requests
-			fmt.Println("429", path, header.Get("X-RateLimit-Remaining"), header.Get("X-RateLimit-Reset"), header.Get("X-RateLimit-Limit"), header.Get("X-RateLimit-Policy"), header.Get("retry-after"))
+			log.Println("429", path, header.Get("X-RateLimit-Remaining"), header.Get("X-RateLimit-Reset"), header.Get("X-RateLimit-Limit"), header.Get("X-RateLimit-Policy"), header.Get("retry-after"))
 		}
 		return nil, fmt.Errorf("printful returned HTTP status code: %d", resp.StatusCode)
 	}
 
-	//fmt.Println("remaining", endpoint, header.Get("X-RateLimit-Remaining"), header.Get("X-RateLimit-Reset"), header.Get("X-RateLimit-Limit"))
+	//log.Println("remaining", endpoint, header.Get("X-RateLimit-Remaining"), header.Get("X-RateLimit-Reset"), header.Get("X-RateLimit-Limit"))
 
 	return resp, err
 }
@@ -186,7 +186,7 @@ func (c *PrintfulClient) GetCatalogProducts(opts ...requestOption) ([]model.Prod
 	for {
 
 		u, _ := buildURL(PRINTFUL_CATALOG_PRODUCTS, opt)
-		fmt.Println(u)
+		log.Println(u)
 		resp, err := c.get(u, nil, ctx)
 		if err != nil {
 			log.Println(err)
@@ -230,7 +230,7 @@ func (c *PrintfulClient) GetCountries(opts ...requestOption) ([]model.Country, e
 
 	for {
 		u, _ := buildURL(PRINTFUL_COUNTRIES, opt)
-		fmt.Println(u)
+		log.Println(u)
 		resp, err := c.get(u, nil, ctx)
 		if err != nil {
 			log.Println(err)
