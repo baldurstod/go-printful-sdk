@@ -213,6 +213,49 @@ func (c *PrintfulClient) GetCatalogProducts(opts ...requestOption) ([]model.Prod
 	return products, nil
 }
 
+func (c *PrintfulClient) GetCatalogVariants(productId int, opts ...requestOption) ([]model.Variant, error) {
+	opt := getOptions(opts...)
+
+	variants := make([]model.Variant, 0, 10)
+
+	var ctx context.Context
+	var cancel context.CancelFunc
+	if opt.timeout > 0 {
+		ctx, cancel = context.WithTimeout(context.Background(), opt.timeout)
+		defer cancel()
+	}
+
+	opt.offset = 0
+	opt.limit = 100
+
+	for {
+		u, _ := buildURL("https://api.printful.com/v2/catalog-products/"+strconv.Itoa(productId)+"/catalog-variants", opt)
+		resp, err := c.get(u, nil, ctx)
+		if err != nil {
+			log.Println(err)
+			return nil, errors.New("unable to get printful response")
+		}
+
+		response := &responses.VariantssResponse{}
+		err = json.NewDecoder(resp.Body).Decode(&response)
+		if err != nil {
+			log.Println(err)
+			return nil, errors.New("unable to decode printful response")
+		}
+
+		variants = append(variants, response.Data...)
+
+		next := response.Paging.Offset + response.Paging.Limit
+		if next >= response.Paging.Total {
+			break
+		}
+		opt.offset = next
+		opt.limit = response.Paging.Limit
+	}
+
+	return variants, nil
+}
+
 func (c *PrintfulClient) GetCountries(opts ...requestOption) ([]model.Country, error) {
 	opt := getOptions(opts...)
 

@@ -93,6 +93,32 @@ func TestGetProducts(t *testing.T) {
 	}
 }
 
+func TestGetVariants(t *testing.T) {
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
+
+	token, err := getAuthToken()
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	client := printfulsdk.NewPrintfulClient(token)
+
+	products, err := client.GetCatalogVariants(71)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	j, _ := json.MarshalIndent(&products, "", "\t")
+
+	err = os.WriteFile("./var/variants.json", j, 0666)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+}
+
 func TestGetCountries(t *testing.T) {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 
