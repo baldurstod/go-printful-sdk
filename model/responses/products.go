@@ -1,6 +1,6 @@
 package responses
 
-import model "github.com/baldurstod/go-printful-api/model"
+import model "github.com/baldurstod/go-printful-sdk/model"
 
 type ProductsResponse struct {
 	Data   []model.Product `json:"data" bson:"data" mapstructure:"data"`

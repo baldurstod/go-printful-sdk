@@ -1,4 +1,4 @@
-module github.com/baldurstod/go-printful-api
+module github.com/baldurstod/go-printful-sdk
 
 go 1.22.4
 

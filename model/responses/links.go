@@ -1,6 +1,6 @@
 package responses
 
-import model "github.com/baldurstod/go-printful-api/model"
+import model "github.com/baldurstod/go-printful-sdk/model"
 
 type Links struct {
 	Self     model.Link `json:"self" bson:"self" mapstructure:"self"`

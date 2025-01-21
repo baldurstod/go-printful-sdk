@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	printfulapi "github.com/baldurstod/go-printful-api"
+	printfulapi "github.com/baldurstod/go-printful-sdk"
 )
 
 type Config struct {

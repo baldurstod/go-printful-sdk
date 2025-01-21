@@ -14,8 +14,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/baldurstod/go-printful-api/model"
-	"github.com/baldurstod/go-printful-api/model/responses"
+	"github.com/baldurstod/go-printful-sdk/model"
+	"github.com/baldurstod/go-printful-sdk/model/responses"
 	"golang.org/x/sync/semaphore"
 	"golang.org/x/time/rate"
 )
