@@ -1,4 +1,4 @@
-package printfulapi
+package printfulsdk
 
 import (
 	"bytes"

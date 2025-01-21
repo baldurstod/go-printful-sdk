@@ -1,4 +1,4 @@
-package printfulapi_test
+package printfulsdk_test
 
 import (
 	"encoding/json"
@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	printfulapi "github.com/baldurstod/go-printful-sdk"
+	printfulsdk "github.com/baldurstod/go-printful-sdk"
 )
 
 type Config struct {
@@ -39,7 +39,7 @@ func TestRateLimiter(t *testing.T) {
 		return
 	}
 
-	client := printfulapi.NewPrintfulClient(token)
+	client := printfulsdk.NewPrintfulClient(token)
 
 	client.GetCountries()
 	time.Sleep(2 * time.Second)
@@ -52,7 +52,7 @@ func TestRateLimiter(t *testing.T) {
 
 		go func() {
 			defer wg.Done()
-			client.GetCountries( /*printfulapi.WithTimeout(1 * time.Second)*/ )
+			client.GetCountries( /*printfulsdk.WithTimeout(1 * time.Second)*/ )
 			done = done + 1
 			//log.Println(done)
 		}()
@@ -76,9 +76,9 @@ func TestGetProducts(t *testing.T) {
 		return
 	}
 
-	client := printfulapi.NewPrintfulClient(token)
+	client := printfulsdk.NewPrintfulClient(token)
 
-	products, err := client.GetCatalogProducts( /*printfulapi.WithLimit(100)*/ /*, printfulapi.WithTimeout(5*time.Second)*/ )
+	products, err := client.GetCatalogProducts( /*printfulsdk.WithLimit(100)*/ /*, printfulsdk.WithTimeout(5*time.Second)*/ )
 	if err != nil {
 		t.Error(err)
 		return
@@ -102,9 +102,9 @@ func TestGetCountries(t *testing.T) {
 		return
 	}
 
-	client := printfulapi.NewPrintfulClient(token)
+	client := printfulsdk.NewPrintfulClient(token)
 
-	countries, err := client.GetCountries( /*printfulapi.WithLimit(100)*/ /*, printfulapi.WithTimeout(5*time.Second)*/ )
+	countries, err := client.GetCountries( /*printfulsdk.WithLimit(100)*/ /*, printfulsdk.WithTimeout(5*time.Second)*/ )
 	if err != nil {
 		t.Error(err)
 		return
