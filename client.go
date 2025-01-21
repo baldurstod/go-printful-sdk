@@ -171,7 +171,7 @@ func buildURL(path string, o options) (string, error) {
 func (c *PrintfulClient) GetCatalogProducts(opts ...requestOption) ([]model.Product, error) {
 	opt := getOptions(opts...)
 
-	products := make([]model.Product, 0)
+	products := make([]model.Product, 0, 400)
 
 	var ctx context.Context
 	var cancel context.CancelFunc
@@ -216,7 +216,7 @@ func (c *PrintfulClient) GetCatalogProducts(opts ...requestOption) ([]model.Prod
 func (c *PrintfulClient) GetCountries(opts ...requestOption) ([]model.Country, error) {
 	opt := getOptions(opts...)
 
-	countries := make([]model.Country, 0)
+	countries := make([]model.Country, 0, 200)
 
 	var ctx context.Context
 	var cancel context.CancelFunc
