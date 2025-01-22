@@ -264,10 +264,10 @@ func (c *PrintfulClient) GetCatalogVariants(productId int, opts ...requestOption
 	return variants, nil
 }
 
-func (c *PrintfulClient) GetProductPrices(productId int, opts ...requestOption) (*model.ProductPrice, error) {
+func (c *PrintfulClient) GetProductPrices(productId int, opts ...requestOption) (*model.ProductPrices, error) {
 	opt := getOptions(opts...)
 
-	prices := model.ProductPrice{}
+	prices := model.ProductPrices{}
 
 	var ctx context.Context
 	var cancel context.CancelFunc
