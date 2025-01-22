@@ -260,10 +260,8 @@ func (c *PrintfulClient) GetCatalogVariants(productId int, opts ...requestOption
 	return variants, nil
 }
 
-func (c *PrintfulClient) GetVariantPrices(varianttId int, opts ...requestOption) (map[string]interface{}, error) {
+func (c *PrintfulClient) GetVariantPrices(varianttId int, opts ...requestOption) (*model.VariantPrice, error) {
 	opt := getOptions(opts...)
-
-	prices := make(map[string]interface{})
 
 	var ctx context.Context
 	var cancel context.CancelFunc
@@ -279,8 +277,8 @@ func (c *PrintfulClient) GetVariantPrices(varianttId int, opts ...requestOption)
 		return nil, errors.New("unable to get printful response")
 	}
 
-	//response := &responses.VariantssResponse{}
-	err = json.NewDecoder(resp.Body).Decode(&prices)
+	response := &responses.VariantPricesResponse{}
+	err = json.NewDecoder(resp.Body).Decode(&response)
 	if err != nil {
 		log.Println(err)
 		return nil, errors.New("unable to decode printful response")
@@ -288,7 +286,7 @@ func (c *PrintfulClient) GetVariantPrices(varianttId int, opts ...requestOption)
 
 	//variants = append(variants, response.Data...)
 
-	return prices, nil
+	return &response.Data, nil
 }
 
 func (c *PrintfulClient) GetCountries(opts ...requestOption) ([]model.Country, error) {
