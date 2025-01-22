@@ -164,6 +164,10 @@ func buildURL(path string, o options) (string, error) {
 		q.Set("offset", strconv.Itoa(int(o.offset)))
 	}
 
+	if o.sellingRegionName != "" {
+		q.Set("selling_region_name", o.sellingRegionName)
+	}
+
 	u.RawQuery = q.Encode()
 	return u.String(), nil
 }
@@ -236,7 +240,7 @@ func (c *PrintfulClient) GetCatalogVariants(productId int, opts ...requestOption
 			return nil, errors.New("unable to get printful response")
 		}
 
-		response := &responses.VariantssResponse{}
+		response := &responses.VariantsResponse{}
 		err = json.NewDecoder(resp.Body).Decode(&response)
 		if err != nil {
 			log.Println(err)
@@ -254,6 +258,37 @@ func (c *PrintfulClient) GetCatalogVariants(productId int, opts ...requestOption
 	}
 
 	return variants, nil
+}
+
+func (c *PrintfulClient) GetVariantPrices(varianttId int, opts ...requestOption) (map[string]interface{}, error) {
+	opt := getOptions(opts...)
+
+	prices := make(map[string]interface{})
+
+	var ctx context.Context
+	var cancel context.CancelFunc
+	if opt.timeout > 0 {
+		ctx, cancel = context.WithTimeout(context.Background(), opt.timeout)
+		defer cancel()
+	}
+
+	u, _ := buildURL("https://api.printful.com/v2/catalog-variants/"+strconv.Itoa(varianttId)+"/prices", opt)
+	resp, err := c.get(u, nil, ctx)
+	if err != nil {
+		log.Println(err)
+		return nil, errors.New("unable to get printful response")
+	}
+
+	//response := &responses.VariantssResponse{}
+	err = json.NewDecoder(resp.Body).Decode(&prices)
+	if err != nil {
+		log.Println(err)
+		return nil, errors.New("unable to decode printful response")
+	}
+
+	//variants = append(variants, response.Data...)
+
+	return prices, nil
 }
 
 func (c *PrintfulClient) GetCountries(opts ...requestOption) ([]model.Country, error) {

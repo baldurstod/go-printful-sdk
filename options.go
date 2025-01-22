@@ -31,18 +31,18 @@ const (
 )
 
 type options struct {
-	categories    []int
-	colors        []string
-	placements    []string
-	techniques    []Technique
-	offset        uint
-	limit         uint
-	new           bool
-	regionName    string
-	sortDirection SortDirection
-	sortType      SortType
-	language      string
-	timeout       time.Duration
+	categories        []int
+	colors            []string
+	placements        []string
+	techniques        []Technique
+	offset            uint
+	limit             uint
+	new               bool
+	sellingRegionName string
+	sortDirection     SortDirection
+	sortType          SortType
+	language          string
+	timeout           time.Duration
 }
 
 type requestOption func(*options)
@@ -83,9 +83,9 @@ func WithOnlyNew() requestOption {
 	}
 }
 
-func WithRegionName(regionName string) requestOption {
+func WithSellingRegionName(sellingRegionName string) requestOption {
 	return func(o *options) {
-		o.regionName = regionName
+		o.sellingRegionName = sellingRegionName
 	}
 }
 
