@@ -39,6 +39,7 @@ type options struct {
 	limit             uint
 	new               bool
 	sellingRegionName string
+	currency          string
 	sortDirection     SortDirection
 	sortType          SortType
 	language          string
@@ -86,6 +87,12 @@ func WithOnlyNew() requestOption {
 func WithSellingRegionName(sellingRegionName string) requestOption {
 	return func(o *options) {
 		o.sellingRegionName = sellingRegionName
+	}
+}
+
+func WithCurrency(currency string) requestOption {
+	return func(o *options) {
+		o.currency = currency
 	}
 }
 

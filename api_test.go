@@ -119,6 +119,32 @@ func TestGetVariants(t *testing.T) {
 	}
 }
 
+func TestGetProductPrices(t *testing.T) {
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
+
+	token, err := getAuthToken()
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	client := printfulsdk.NewPrintfulClient(token)
+
+	products, err := client.GetProductPrices(71, printfulsdk.WithCurrency("EUR") /*, printfulsdk.WithSellingRegionName("new_zealand")*/)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	j, _ := json.MarshalIndent(&products, "", "\t")
+
+	err = os.WriteFile("./var/product_prices.json", j, 0666)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+}
+
 func TestGetVariantPrices(t *testing.T) {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 

@@ -168,6 +168,10 @@ func buildURL(path string, o options) (string, error) {
 		q.Set("selling_region_name", o.sellingRegionName)
 	}
 
+	if o.currency != "" {
+		q.Set("currency", o.currency)
+	}
+
 	u.RawQuery = q.Encode()
 	return u.String(), nil
 }
@@ -258,6 +262,53 @@ func (c *PrintfulClient) GetCatalogVariants(productId int, opts ...requestOption
 	}
 
 	return variants, nil
+}
+
+func (c *PrintfulClient) GetProductPrices(productId int, opts ...requestOption) (*model.ProductPrice, error) {
+	opt := getOptions(opts...)
+
+	prices := model.ProductPrice{}
+
+	var ctx context.Context
+	var cancel context.CancelFunc
+	if opt.timeout > 0 {
+		ctx, cancel = context.WithTimeout(context.Background(), opt.timeout)
+		defer cancel()
+	}
+
+	opt.offset = 0
+	opt.limit = 100
+
+	for {
+		u, _ := buildURL("https://api.printful.com/v2/catalog-products/"+strconv.Itoa(productId)+"/prices", opt)
+		resp, err := c.get(u, nil, ctx)
+		if err != nil {
+			log.Println(err)
+			return nil, errors.New("unable to get printful response")
+		}
+
+		response := &responses.ProductPricesResponse{}
+		err = json.NewDecoder(resp.Body).Decode(&response)
+		if err != nil {
+			log.Println(err)
+			return nil, errors.New("unable to decode printful response")
+		}
+
+		prices.Currency = response.Data.Currency
+		prices.Product = response.Data.Product
+		prices.Variants = append(prices.Variants, response.Data.Variants...)
+
+		next := response.Paging.Offset + response.Paging.Limit
+
+		if next >= response.Paging.Total {
+			break
+		}
+
+		opt.offset = next
+		opt.limit = response.Paging.Limit
+	}
+
+	return &prices, nil
 }
 
 func (c *PrintfulClient) GetVariantPrices(varianttId int, opts ...requestOption) (*model.VariantPrice, error) {
