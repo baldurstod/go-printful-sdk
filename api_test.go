@@ -208,7 +208,7 @@ func TestGetTemplates(t *testing.T) {
 
 	client := printfulsdk.NewPrintfulClient(token)
 
-	countries, err := client.GetTemplates(403)
+	countries, err := client.GetProductTemplates(403)
 	if err != nil {
 		t.Error(err)
 		return
