@@ -74,7 +74,7 @@ func WithColors(colors ...string) requestOption {
 
 func WithPlacements(placements ...string) requestOption {
 	return func(o *options) {
-		o.colors = append(o.placements, placements...)
+		o.placements = append(o.placements, placements...)
 	}
 }
 

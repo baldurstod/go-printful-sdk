@@ -208,15 +208,15 @@ func TestGetTemplates(t *testing.T) {
 
 	client := printfulsdk.NewPrintfulClient(token)
 
-	countries, err := client.GetProductTemplates(403)
+	templates, err := client.GetMockupTemplates(403)
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
-	j, _ := json.MarshalIndent(&countries, "", "\t")
+	j, _ := json.MarshalIndent(&templates, "", "\t")
 
-	err = os.WriteFile("./var/templates.json", j, 0666)
+	err = os.WriteFile("./var/mockup_templates.json", j, 0666)
 	if err != nil {
 		t.Error(err)
 		return

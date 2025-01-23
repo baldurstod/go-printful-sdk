@@ -384,8 +384,10 @@ func (c *PrintfulClient) GetCountries(opts ...requestOption) ([]model.Country, e
 	return countries, nil
 }
 
-func (c *PrintfulClient) GetProductTemplates(productId int, opts ...requestOption) (*model.ProductTemplates, error) {
+func (c *PrintfulClient) GetMockupTemplates(productId int, opts ...requestOption) ([]model.MockupTemplates, error) {
 	opt := getOptions(opts...)
+
+	templates := make([]model.MockupTemplates, 0, 10)
 
 	var ctx context.Context
 	var cancel context.CancelFunc
@@ -394,21 +396,34 @@ func (c *PrintfulClient) GetProductTemplates(productId int, opts ...requestOptio
 		defer cancel()
 	}
 
-	// TODO: use api v2 when available
-	u, _ := buildURL("https://api.printful.com/mockup-generator/templates/"+strconv.Itoa(productId), opt)
-	log.Println(u)
-	resp, err := c.get(u, nil, ctx)
-	if err != nil {
-		log.Println(err)
-		return nil, errors.New("unable to get printful response")
+	opt.offset = 0
+	opt.limit = 100
+
+	for {
+		u, _ := buildURL("https://api.printful.com/v2/catalog-products/"+strconv.Itoa(productId)+"/mockup-templates", opt)
+		log.Println(u)
+		resp, err := c.get(u, nil, ctx)
+		if err != nil {
+			log.Println(err)
+			return nil, errors.New("unable to get printful response")
+		}
+
+		response := &responses.MockupTemplatesResponse{}
+		err = json.NewDecoder(resp.Body).Decode(&response)
+		if err != nil {
+			log.Println(err)
+			return nil, errors.New("unable to decode printful response")
+		}
+
+		templates = append(templates, response.Data...)
+
+		next := response.Paging.Offset + response.Paging.Limit
+		if next >= response.Paging.Total {
+			break
+		}
+		opt.offset = next
+		opt.limit = response.Paging.Limit
 	}
 
-	response := &responses.TemplatesResponse{}
-	err = json.NewDecoder(resp.Body).Decode(&response)
-	if err != nil {
-		log.Println(err)
-		return nil, errors.New("unable to decode printful response")
-	}
-
-	return &response.Result, nil
+	return templates, nil
 }
