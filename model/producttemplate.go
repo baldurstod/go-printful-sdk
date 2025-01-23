@@ -1,7 +1,7 @@
 package model
 
 // TODO: adapt for api v2
-type ProductTemplate struct {
+type ProductTemplates struct {
 	Version               int                         `json:"version" bson:"version"`
 	MinDPI                int                         `json:"min_dpi" bson:"min_dpi"`
 	VariantMapping        []TemplateVariantMapping    `json:"variant_mapping" bson:"variant_mapping"`

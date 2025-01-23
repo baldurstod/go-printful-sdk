@@ -384,7 +384,7 @@ func (c *PrintfulClient) GetCountries(opts ...requestOption) ([]model.Country, e
 	return countries, nil
 }
 
-func (c *PrintfulClient) GetTemplates(productId int, opts ...requestOption) (*model.ProductTemplate, error) {
+func (c *PrintfulClient) GetTemplates(productId int, opts ...requestOption) (*model.ProductTemplates, error) {
 	opt := getOptions(opts...)
 
 	var ctx context.Context
