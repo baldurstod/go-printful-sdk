@@ -144,7 +144,7 @@ func (c *PrintfulClient) fetch(method string, path string, headers map[string]st
 		return nil, fmt.Errorf("printful returned HTTP status code: %d", resp.StatusCode)
 	}
 
-	//log.Println("remaining", endpoint, header.Get("X-RateLimit-Remaining"), header.Get("X-RateLimit-Reset"), header.Get("X-RateLimit-Limit"))
+	//log.Println("remaining", path, header.Get("X-RateLimit-Remaining"), header.Get("X-RateLimit-Reset"), header.Get("X-RateLimit-Limit"))
 
 	return resp, err
 }
@@ -382,4 +382,33 @@ func (c *PrintfulClient) GetCountries(opts ...requestOption) ([]model.Country, e
 	}
 
 	return countries, nil
+}
+
+func (c *PrintfulClient) GetTemplates(productId int, opts ...requestOption) (*model.ProductTemplate, error) {
+	opt := getOptions(opts...)
+
+	var ctx context.Context
+	var cancel context.CancelFunc
+	if opt.timeout > 0 {
+		ctx, cancel = context.WithTimeout(context.Background(), opt.timeout)
+		defer cancel()
+	}
+
+	// TODO: use api v2 when available
+	u, _ := buildURL("https://api.printful.com/mockup-generator/templates/"+strconv.Itoa(productId), opt)
+	log.Println(u)
+	resp, err := c.get(u, nil, ctx)
+	if err != nil {
+		log.Println(err)
+		return nil, errors.New("unable to get printful response")
+	}
+
+	response := &responses.TemplatesResponse{}
+	err = json.NewDecoder(resp.Body).Decode(&response)
+	if err != nil {
+		log.Println(err)
+		return nil, errors.New("unable to decode printful response")
+	}
+
+	return &response.Result, nil
 }

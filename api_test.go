@@ -196,3 +196,29 @@ func TestGetCountries(t *testing.T) {
 		return
 	}
 }
+
+func TestGetTemplates(t *testing.T) {
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
+
+	token, err := getAuthToken()
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	client := printfulsdk.NewPrintfulClient(token)
+
+	countries, err := client.GetTemplates(403)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	j, _ := json.MarshalIndent(&countries, "", "\t")
+
+	err = os.WriteFile("./var/templates.json", j, 0666)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+}
