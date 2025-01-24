@@ -27,7 +27,7 @@ const (
 	Uv          Technique = "uv"
 	Embroidery  Technique = "embroidery"
 	Sublimation Technique = "sublimation"
-	DtFilm      SortType  = "dtfilm"
+	DtFilm      Technique = "dtfilm"
 )
 
 type options struct {
