@@ -222,3 +222,29 @@ func TestGetTemplates(t *testing.T) {
 		return
 	}
 }
+
+func TestGetMockupStyles(t *testing.T) {
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
+
+	token, err := getAuthToken()
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	client := printfulsdk.NewPrintfulClient(token)
+
+	templates, err := client.GetMockupStyles(403)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	j, _ := json.MarshalIndent(&templates, "", "\t")
+
+	err = os.WriteFile("./var/mockup_styles.json", j, 0666)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+}

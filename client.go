@@ -427,3 +427,47 @@ func (c *PrintfulClient) GetMockupTemplates(productId int, opts ...requestOption
 
 	return templates, nil
 }
+
+func (c *PrintfulClient) GetMockupStyles(productId int, opts ...requestOption) ([]model.MockupStyles, error) {
+	opt := getOptions(opts...)
+
+	styles := make([]model.MockupStyles, 0, 10)
+
+	var ctx context.Context
+	var cancel context.CancelFunc
+	if opt.timeout > 0 {
+		ctx, cancel = context.WithTimeout(context.Background(), opt.timeout)
+		defer cancel()
+	}
+
+	opt.offset = 0
+	opt.limit = 100
+
+	for {
+		u, _ := buildURL("https://api.printful.com/v2/catalog-products/"+strconv.Itoa(productId)+"/mockup-styles", opt)
+		log.Println(u)
+		resp, err := c.get(u, nil, ctx)
+		if err != nil {
+			log.Println(err)
+			return nil, errors.New("unable to get printful response")
+		}
+
+		response := &responses.MockupStylesResponse{}
+		err = json.NewDecoder(resp.Body).Decode(&response)
+		if err != nil {
+			log.Println(err)
+			return nil, errors.New("unable to decode printful response")
+		}
+
+		styles = append(styles, response.Data...)
+
+		next := response.Paging.Offset + response.Paging.Limit
+		if next >= response.Paging.Total {
+			break
+		}
+		opt.offset = next
+		opt.limit = response.Paging.Limit
+	}
+
+	return styles, nil
+}
