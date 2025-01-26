@@ -44,6 +44,10 @@ type options struct {
 	sortType          SortType
 	language          string
 	timeout           time.Duration
+	url               string
+	fileRole          string
+	filename          string
+	fileVisible       bool
 }
 
 type requestOption func(*options)
@@ -126,10 +130,39 @@ func WithTimeout(timeout time.Duration) requestOption {
 	}
 }
 
+func SetFileRole(role string) requestOption {
+	return func(o *options) {
+		o.fileRole = role
+	}
+}
+
+func SetURL(url string) requestOption {
+	return func(o *options) {
+		o.url = url
+	}
+}
+
+func SetFilename(filename string) requestOption {
+	return func(o *options) {
+		o.filename = filename
+	}
+}
+
+func SetFileVisible(visible bool) requestOption {
+	return func(o *options) {
+		o.fileVisible = visible
+	}
+}
+
+func GetOptions(opts ...requestOption) options {
+	return getOptions(opts...)
+}
+
 func getOptions(opts ...requestOption) options {
 	cfg := options{
-		limit:   0,
-		timeout: time.Duration(-1),
+		limit:       0,
+		timeout:     time.Duration(-1),
+		fileVisible: true,
 	}
 	for _, fn := range opts {
 		fn(&cfg)
