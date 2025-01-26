@@ -248,3 +248,37 @@ func TestGetMockupStyles(t *testing.T) {
 		return
 	}
 }
+
+func TestRequestBody(t *testing.T) {
+	opt := printfulsdk.GetOptions(
+		printfulsdk.SetURL("​https://www.example.com/files/tshirts/example.png"),
+	)
+	body := printfulsdk.BuildRequestBody(opt, printfulsdk.FileRole, printfulsdk.URL, printfulsdk.Filename, printfulsdk.FileVisible)
+	log.Println(body)
+}
+
+func TestAddFile(t *testing.T) {
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
+
+	token, err := getAuthToken()
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	client := printfulsdk.NewPrintfulClient(token)
+
+	file, err := client.AddFile("https://tf2content.loadout.tf/materials/backpack/player/items/sniper/knife_shield.png")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	j, _ := json.MarshalIndent(&file, "", "\t")
+
+	err = os.WriteFile("./var/created_file.json", j, 0666)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+}
