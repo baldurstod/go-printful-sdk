@@ -251,7 +251,7 @@ func TestGetMockupStyles(t *testing.T) {
 
 func TestRequestBody(t *testing.T) {
 	opt := printfulsdk.GetOptions(
-		printfulsdk.SetURL("​https://www.example.com/files/tshirts/example.png"),
+		printfulsdk.SetURL("https://www.example.com/files/tshirts/example.png"),
 	)
 	body := printfulsdk.BuildRequestBody(opt, printfulsdk.FileRole, printfulsdk.URL, printfulsdk.Filename, printfulsdk.FileVisible)
 	log.Println(body)
