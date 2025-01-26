@@ -137,9 +137,29 @@ func (c *PrintfulClient) fetch(method string, path string, headers map[string]st
 		}
 	}
 
-	if resp.StatusCode != 200 { //Everything except 429 and 200
-		if resp.StatusCode == 429 { //Too Many Requests
-			log.Println("429", path, header.Get("X-RateLimit-Remaining"), header.Get("X-RateLimit-Reset"), header.Get("X-RateLimit-Limit"), header.Get("X-RateLimit-Policy"), header.Get("retry-after"))
+	if resp.StatusCode != 200 {
+		switch {
+		case resp.StatusCode == 429:
+			//log.Println("429", path, header.Get("X-RateLimit-Remaining"), header.Get("X-RateLimit-Reset"), header.Get("X-RateLimit-Limit"), header.Get("X-RateLimit-Policy"), header.Get("retry-after"))
+			response := map[string]interface{}{
+				path:          path,
+				"remaining":   header.Get("X-RateLimit-Remaining"),
+				"reset":       header.Get("X-RateLimit-Reset"),
+				"limit":       header.Get("X-RateLimit-Limit"),
+				"policy":      header.Get("X-RateLimit-Policy"),
+				"retry-after": header.Get("retry-after"),
+			}
+			return nil, NewHTTPError(fmt.Errorf("printful returned HTTP status code: %d", resp.StatusCode), response)
+		case resp.StatusCode >= 400 && resp.StatusCode < 500:
+			response := &responses.Error4XXResponse{}
+			if err = json.NewDecoder(resp.Body).Decode(&response); err == nil {
+				return nil, NewHTTPError(fmt.Errorf("printful returned HTTP status code: %d", resp.StatusCode), response)
+			}
+		case resp.StatusCode >= 500 && resp.StatusCode < 600:
+			response := &responses.Error5XXResponse{}
+			if err = json.NewDecoder(resp.Body).Decode(&response); err == nil {
+				return nil, NewHTTPError(fmt.Errorf("printful returned HTTP status code: %d", resp.StatusCode), response)
+			}
 		}
 		return nil, fmt.Errorf("printful returned HTTP status code: %d", resp.StatusCode)
 	}
