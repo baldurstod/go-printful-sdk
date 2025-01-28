@@ -16,12 +16,11 @@ type Product struct {
 	Colors            []Color         `json:"colors" bson:"colors" mapstructure:"colors"`
 	Techniques        []Technique     `json:"techniques" bson:"techniques" mapstructure:"techniques"`
 	Placements        []Placement     `json:"placements" bson:"placements" mapstructure:"placements"`
-	Options           []ProductOption `json:"product_options" bson:"product_options" mapstructure:"product_options"`
+	ProductOptions    []CatalogOption `json:"product_options" bson:"product_options" mapstructure:"product_options"`
 	Links             ProductLinks    `json:"_links" bson:"_links" mapstructure:"_links"`
 }
 
-// TODO: merge with PlacementOption and LayerOption ?
-type ProductOption struct {
+type CatalogOption struct {
 	Name       string   `json:"name" bson:"name" mapstructure:"name"`
 	Techniques []string `json:"techniques" bson:"techniques" mapstructure:"techniques"`
 	Type       string   `json:"type" bson:"type" mapstructure:"type"`
