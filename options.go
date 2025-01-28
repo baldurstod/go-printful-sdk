@@ -1,6 +1,10 @@
 package printfulsdk
 
-import "time"
+import (
+	"time"
+
+	"github.com/baldurstod/go-printful-sdk/model"
+)
 
 type SortDirection string
 
@@ -31,26 +35,47 @@ const (
 )
 
 type options struct {
-	categories        []int
-	colors            []string
-	placements        []string
-	techniques        []Technique
-	offset            uint
-	limit             uint
-	new               bool
-	sellingRegionName string
-	currency          string
-	sortDirection     SortDirection
-	sortType          SortType
-	language          string
-	timeout           time.Duration
-	url               string
-	fileRole          string
-	filename          string
-	fileVisible       bool
+	categories          []int
+	colors              []string
+	placements          []string
+	techniques          []Technique
+	offset              uint
+	limit               uint
+	new                 bool
+	sellingRegionName   string
+	currency            string
+	sortDirection       SortDirection
+	sortType            SortType
+	language            string
+	timeout             time.Duration
+	url                 string
+	fileRole            string
+	filename            string
+	fileVisible         bool
+	orderExternalID     string
+	orderShippingMethod string
+	orderCustomization  *model.Customization
+	orderRetailCosts    *model.RetailCosts2
 }
 
 type requestOption func(*options)
+
+func GetOptions(opts ...requestOption) options {
+	return getOptions(opts...)
+}
+
+func getOptions(opts ...requestOption) options {
+	cfg := options{
+		limit:       0,
+		timeout:     time.Duration(-1),
+		fileVisible: true,
+	}
+	for _, fn := range opts {
+		fn(&cfg)
+	}
+
+	return cfg
+}
 
 func WithOffset(offset uint) requestOption {
 	return func(o *options) {
@@ -154,19 +179,26 @@ func SetFileVisible(visible bool) requestOption {
 	}
 }
 
-func GetOptions(opts ...requestOption) options {
-	return getOptions(opts...)
+func SetOrderExternalID(externalID string) requestOption {
+	return func(o *options) {
+		o.orderExternalID = externalID
+	}
 }
 
-func getOptions(opts ...requestOption) options {
-	cfg := options{
-		limit:       0,
-		timeout:     time.Duration(-1),
-		fileVisible: true,
+func SetOrderShippingMethod(shippingMethod string) requestOption {
+	return func(o *options) {
+		o.orderShippingMethod = shippingMethod
 	}
-	for _, fn := range opts {
-		fn(&cfg)
-	}
+}
 
-	return cfg
+func SetOrderCustomization(customization *model.Customization) requestOption {
+	return func(o *options) {
+		o.orderCustomization = customization
+	}
+}
+
+func SetOrderRetailCosts(retailCosts *model.RetailCosts2) requestOption {
+	return func(o *options) {
+		o.orderRetailCosts = retailCosts
+	}
 }

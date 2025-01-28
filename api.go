@@ -7,6 +7,10 @@ const (
 	URL
 	Filename
 	FileVisible
+	OrderExternalID
+	OrderShippingMethod
+	OrderCustomization
+	OrderRetailCosts
 )
 
 func BuildRequestBody(o options, keys ...RequestBodyKey) map[string]interface{} {
@@ -26,6 +30,22 @@ func BuildRequestBody(o options, keys ...RequestBodyKey) map[string]interface{} 
 			}
 		case FileVisible:
 			body["visible"] = o.fileVisible
+		case OrderExternalID:
+			if o.orderExternalID != "" {
+				body["external_id"] = o.orderExternalID
+			}
+		case OrderShippingMethod:
+			if o.orderShippingMethod != "" {
+				body["shipping"] = o.orderShippingMethod
+			}
+		case OrderCustomization:
+			if o.orderCustomization != nil {
+				body["customization"] = o.orderCustomization
+			}
+		case OrderRetailCosts:
+			if o.orderRetailCosts != nil {
+				body["retail_costs"] = o.orderRetailCosts
+			}
 		}
 	}
 	return body
