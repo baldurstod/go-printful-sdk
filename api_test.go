@@ -9,6 +9,7 @@ import (
 	"time"
 
 	printfulsdk "github.com/baldurstod/go-printful-sdk"
+	"github.com/baldurstod/go-printful-sdk/model"
 )
 
 type Config struct {
@@ -17,6 +18,19 @@ type Config struct {
 
 type Printful struct {
 	AccessToken string `json:"access_token"`
+}
+
+var client *printfulsdk.PrintfulClient
+
+func init() {
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
+
+	token, err := getAuthToken()
+	if err != nil {
+		panic(err)
+	}
+
+	client = printfulsdk.NewPrintfulClient(token)
 }
 
 func getAuthToken() (string, error) {
@@ -281,4 +295,55 @@ func TestAddFile(t *testing.T) {
 		t.Error(err)
 		return
 	}
+}
+
+func TestCreateOrder(t *testing.T) {
+	recipient := model.Address{
+		Name:        "John Smith",
+		Address1:    "1 Main St",
+		City:        "San Jose",
+		CountryCode: "US",
+		StateCode:   "CA",
+		ZIP:         "95131",
+		Email:       "sb-jzssp18153762@personal.example.com",
+	}
+
+	items := make([]model.CatalogItem, 0)
+	items = append(items, getItem())
+
+	order, err := client.CreateOrder(recipient, items)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	j, _ := json.MarshalIndent(&order, "", "\t")
+
+	err = os.WriteFile("./var/created_order.json", j, 0666)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+}
+
+func getItem() model.CatalogItem {
+	item := model.NewCatalogItem()
+
+	item.CatalogVariantID = 9323
+	item.Quantity = 1
+	item.RetailPrice = "15"
+	item.Name = "Test create order"
+
+	placement := model.NewPlacement()
+	placement.Placement = "default"
+	placement.Technique = "sublimation"
+
+	layer := model.Layer{}
+
+	layer.Type = "file"
+	layer.Url = "https://tf2content.loadout.tf/materials/backpack/weapons/w_models/w_stickybomb_launcher.png"
+
+	placement.Layers = append(placement.Layers, layer)
+	item.Placements = append(item.Placements, placement)
+	return item
 }

@@ -7,7 +7,7 @@ type Item struct {
 	RetailPrice    string         `json:"retail_price" bson:"retail_price"`
 	Name           string         `json:"name" bson:"name"`
 	Placements     PlacementsList `json:"placements" bson:"placements"`
-	ProductOptions `json:"product_options" bson:"product_options"`
+	ProductOptions `json:"product_options,omitempty" bson:"product_options"`
 }
 
 type PlacementsList = []Placement

@@ -7,16 +7,9 @@ const (
 	TypeBrandingItem CatalogItemType = "branding_item"
 )
 
-type CatalogItemSource string
-
-const (
-	SourceCatalog CatalogItemSource = "catalog"
-)
-
 type CatalogItemSummary struct {
 	ID               int                     `json:"id" bson:"id"`
 	Type             CatalogItemType         `json:"Type" bson:"Type"`
-	Source           CatalogItemSource       `json:"source" bson:"source"`
 	CatalogVariantID int                     `json:"catalog_variant_id" bson:"catalog_variant_id"`
 	ExternalID       string                  `json:"external_id" bson:"external_id"`
 	Quantity         int                     `json:"quantity" bson:"quantity"`
