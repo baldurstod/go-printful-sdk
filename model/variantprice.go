@@ -44,7 +44,7 @@ type VariantsPriceData struct {
 type TechniquePriceInfo struct {
 	Price           string `json:"price" bson:"price" mapstructure:"price"`
 	DiscountedPrice string `json:"discounted_price" bson:"discounted_price" mapstructure:"discounted_price"`
-	Key             string `json:"technique_key" bson:"technique_key" mapstructure:"technique_key"`
+	TechniqueKey    string `json:"technique_key" bson:"technique_key" mapstructure:"technique_key"`
 	DisplayName     string `json:"technique_display_name" bson:"technique_display_name" mapstructure:"technique_display_name"`
 }
 
