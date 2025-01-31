@@ -347,3 +347,19 @@ func getItem() model.CatalogItem {
 	item.Placements = append(item.Placements, placement)
 	return item
 }
+
+func TestGetCategories(t *testing.T) {
+	products, err := client.GetCatalogCategories()
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	j, _ := json.MarshalIndent(&products, "", "\t")
+
+	err = os.WriteFile("./var/categories.json", j, 0666)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+}
