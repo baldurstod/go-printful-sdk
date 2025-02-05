@@ -21,7 +21,7 @@ type Product struct {
 }
 
 type ProductPlacement struct {
-	DesignPlacement
+	DesignPlacement       `bson:"inline"`
 	ConflictingPlacements []Layer `json:"conflicting_placements" bson:"conflicting_placements"`
 }
 
