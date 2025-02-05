@@ -52,11 +52,11 @@ func (c *PrintfulClient) SetAccessToken(accessToken string) {
 	c.accessToken = accessToken
 }
 
-func (c *PrintfulClient) get(path string, headers map[string]string, ctx context.Context) (*http.Response, error) {
+func (c *PrintfulClient) Get(path string, headers map[string]string, ctx context.Context) (*http.Response, error) {
 	return c.fetch("GET", path, headers, nil, ctx)
 }
 
-func (c *PrintfulClient) post(path string, headers map[string]string, body map[string]interface{}, ctx context.Context) (*http.Response, error) {
+func (c *PrintfulClient) Post(path string, headers map[string]string, body map[string]interface{}, ctx context.Context) (*http.Response, error) {
 	return c.fetch("POST", path, headers, body, ctx)
 }
 
@@ -215,7 +215,7 @@ func (c *PrintfulClient) GetCatalogProducts(opts ...requestOption) ([]model.Prod
 
 		u, _ := buildURL(PRINTFUL_CATALOG_PRODUCTS, opt)
 		log.Println(u)
-		resp, err := c.get(u, nil, ctx)
+		resp, err := c.Get(u, nil, ctx)
 		if err != nil {
 			log.Println(err)
 			return nil, errors.New("unable to get printful response")
@@ -258,7 +258,7 @@ func (c *PrintfulClient) GetCatalogVariants(productId int, opts ...requestOption
 
 	for {
 		u, _ := buildURL("https://api.printful.com/v2/catalog-products/"+strconv.Itoa(productId)+"/catalog-variants", opt)
-		resp, err := c.get(u, nil, ctx)
+		resp, err := c.Get(u, nil, ctx)
 		if err != nil {
 			log.Println(err)
 			return nil, errors.New("unable to get printful response")
@@ -301,7 +301,7 @@ func (c *PrintfulClient) GetProductPrices(productId int, opts ...requestOption) 
 
 	for {
 		u, _ := buildURL("https://api.printful.com/v2/catalog-products/"+strconv.Itoa(productId)+"/prices", opt)
-		resp, err := c.get(u, nil, ctx)
+		resp, err := c.Get(u, nil, ctx)
 		if err != nil {
 			log.Println(err)
 			return nil, errors.New("unable to get printful response")
@@ -342,7 +342,7 @@ func (c *PrintfulClient) GetVariantPrices(varianttId int, opts ...requestOption)
 	}
 
 	u, _ := buildURL("https://api.printful.com/v2/catalog-variants/"+strconv.Itoa(varianttId)+"/prices", opt)
-	resp, err := c.get(u, nil, ctx)
+	resp, err := c.Get(u, nil, ctx)
 	if err != nil {
 		log.Println(err)
 		return nil, errors.New("unable to get printful response")
@@ -378,7 +378,7 @@ func (c *PrintfulClient) GetCountries(opts ...requestOption) ([]model.Country, e
 	for {
 		u, _ := buildURL(PRINTFUL_COUNTRIES, opt)
 		log.Println(u)
-		resp, err := c.get(u, nil, ctx)
+		resp, err := c.Get(u, nil, ctx)
 		if err != nil {
 			log.Println(err)
 			return nil, errors.New("unable to get printful response")
@@ -422,7 +422,7 @@ func (c *PrintfulClient) GetMockupTemplates(productId int, opts ...requestOption
 	for {
 		u, _ := buildURL("https://api.printful.com/v2/catalog-products/"+strconv.Itoa(productId)+"/mockup-templates", opt)
 		log.Println(u)
-		resp, err := c.get(u, nil, ctx)
+		resp, err := c.Get(u, nil, ctx)
 		if err != nil {
 			log.Println(err)
 			return nil, errors.New("unable to get printful response")
@@ -466,7 +466,7 @@ func (c *PrintfulClient) GetMockupStyles(productId int, opts ...requestOption) (
 	for {
 		u, _ := buildURL("https://api.printful.com/v2/catalog-products/"+strconv.Itoa(productId)+"/mockup-styles", opt)
 		log.Println(u)
-		resp, err := c.get(u, nil, ctx)
+		resp, err := c.Get(u, nil, ctx)
 		if err != nil {
 			log.Println(err)
 			return nil, errors.New("unable to get printful response")

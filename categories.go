@@ -27,7 +27,7 @@ func (c *PrintfulClient) GetCatalogCategories(opts ...requestOption) ([]model.Ca
 
 	for {
 		u, _ := buildURL("https://api.printful.com/v2/catalog-categories", opt)
-		resp, err := c.get(u, nil, ctx)
+		resp, err := c.Get(u, nil, ctx)
 		if err != nil {
 			log.Println(err)
 			return nil, errors.New("unable to get printful response")

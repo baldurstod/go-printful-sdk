@@ -30,7 +30,7 @@ func (c *PrintfulClient) CreateOrder(recipient model.Address, items []model.Cata
 	//log.Println(string(b))
 
 	u := "https://api.printful.com/v2/orders"
-	resp, err := c.post(u, nil, body, ctx)
+	resp, err := c.Post(u, nil, body, ctx)
 	if err != nil {
 		log.Println(err)
 		return nil, fmt.Errorf("post returned an error in CreateOrder: %w", err)

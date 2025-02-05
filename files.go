@@ -26,7 +26,7 @@ func (c *PrintfulClient) AddFile(url string, opts ...requestOption) (*model.File
 	body := BuildRequestBody(opt, FileRole, URL, Filename, FileVisible)
 
 	u := "https://api.printful.com/v2/files"
-	resp, err := c.post(u, nil, body, ctx)
+	resp, err := c.Post(u, nil, body, ctx)
 	if err != nil {
 		log.Println(err)
 		return nil, fmt.Errorf("post returned an error in AddFile: %w", err)
