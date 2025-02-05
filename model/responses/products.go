@@ -7,3 +7,7 @@ type ProductsResponse struct {
 	Paging `json:"paging" bson:"paging" mapstructure:"paging"`
 	Links  `json:"_links" bson:"_links" mapstructure:"_links"`
 }
+
+type ProductResponse struct {
+	Data model.Product `json:"data" bson:"data" mapstructure:"data"`
+}
