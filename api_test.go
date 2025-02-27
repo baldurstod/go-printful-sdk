@@ -1,9 +1,11 @@
 package printfulsdk_test
 
 import (
+	"context"
 	"encoding/json"
 	"log"
 	"os"
+	"strconv"
 	"sync"
 	"testing"
 	"time"
@@ -101,6 +103,23 @@ func TestGetProducts(t *testing.T) {
 	j, _ := json.MarshalIndent(&products, "", "\t")
 
 	err = os.WriteFile("./var/products.json", j, 0666)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+}
+
+func TestGetProduct(t *testing.T) {
+	id := 785
+	product, err := client.GetCatalogProduct(id)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	j, _ := json.MarshalIndent(&product, "", "\t")
+
+	err = os.WriteFile("./var/product_"+strconv.Itoa(id)+".json", j, 0666)
 	if err != nil {
 		t.Error(err)
 		return
@@ -329,14 +348,14 @@ func TestCreateOrder(t *testing.T) {
 func getItem() model.CatalogItem {
 	item := model.NewCatalogItem()
 
-	item.CatalogVariantID = 9323
+	item.CatalogVariantID = 19971
 	item.Quantity = 1
-	item.RetailPrice = "15"
+	item.RetailPrice = "20"
 	item.Name = "Test create order"
 
 	placement := model.NewPlacement()
-	placement.Placement = "default"
-	placement.Technique = "sublimation"
+	placement.Placement = "back_large_dtf"
+	placement.Technique = "dtfilm"
 
 	layer := model.Layer{}
 
@@ -358,6 +377,119 @@ func TestGetCategories(t *testing.T) {
 	j, _ := json.MarshalIndent(&products, "", "\t")
 
 	err = os.WriteFile("./var/categories.json", j, 0666)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+}
+
+func TestGetSizes(t *testing.T) {
+	resp, err := client.Get("https://api.printful.com/v2/catalog-products/785/sizes", nil, context.Background())
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	response := map[string]interface{}{}
+	err = json.NewDecoder(resp.Body).Decode(&response)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	j, _ := json.MarshalIndent(&response, "", "\t")
+
+	err = os.WriteFile("./var/sizes.json", j, 0666)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+}
+
+func TestGetPrices(t *testing.T) {
+	resp, err := client.Get("https://api.printful.com/v2/catalog-products/785/prices?currency=USD&limit=100", nil, context.Background())
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	response := map[string]interface{}{}
+	err = json.NewDecoder(resp.Body).Decode(&response)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	j, _ := json.MarshalIndent(&response, "", "\t")
+
+	err = os.WriteFile("./var/prices_785.json", j, 0666)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+}
+
+func TestGetVariantPrices2(t *testing.T) {
+	resp, err := client.Get("https://api.printful.com/v2/catalog-variants/19903/prices?currency=USD&limit=100", nil, context.Background())
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	response := map[string]interface{}{}
+	err = json.NewDecoder(resp.Body).Decode(&response)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	j, _ := json.MarshalIndent(&response, "", "\t")
+
+	err = os.WriteFile("./var/prices_variant_19903.json", j, 0666)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+}
+
+func TestGetVariants2(t *testing.T) {
+	resp, err := client.Get("https://api.printful.com/v2/catalog-products/599/catalog-variants", nil, context.Background())
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	response := map[string]interface{}{}
+	err = json.NewDecoder(resp.Body).Decode(&response)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	j, _ := json.MarshalIndent(&response, "", "\t")
+
+	err = os.WriteFile("./var/variants_599.json", j, 0666)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+}
+
+func TestGetProduct2(t *testing.T) {
+	id := 785
+	resp, err := client.Get("https://api.printful.com/v2/catalog-products/"+strconv.Itoa(id), nil, context.Background())
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	response := map[string]interface{}{}
+	err = json.NewDecoder(resp.Body).Decode(&response)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	j, _ := json.MarshalIndent(&response, "", "\t")
+
+	err = os.WriteFile("./var/product_"+strconv.Itoa(id)+".json", j, 0666)
 	if err != nil {
 		t.Error(err)
 		return
