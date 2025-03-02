@@ -22,7 +22,7 @@ type Product struct {
 
 type ProductPlacement struct {
 	DesignPlacement       `bson:"inline"`
-	ConflictingPlacements []Layer `json:"conflicting_placements" bson:"conflicting_placements"`
+	ConflictingPlacements []string `json:"conflicting_placements" bson:"conflicting_placements"`
 }
 
 type CatalogOption struct {
