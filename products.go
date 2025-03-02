@@ -28,6 +28,7 @@ func (c *PrintfulClient) GetCatalogProduct(productId int, opts ...requestOption)
 		log.Println(err)
 		return nil, errors.New("unable to get printful response")
 	}
+	defer resp.Body.Close()
 
 	response := &responses.ProductResponse{}
 	err = json.NewDecoder(resp.Body).Decode(&response)

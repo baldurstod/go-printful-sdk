@@ -32,6 +32,7 @@ func (c *PrintfulClient) GetCatalogCategories(opts ...requestOption) ([]model.Ca
 			log.Println(err)
 			return nil, errors.New("unable to get printful response")
 		}
+		defer resp.Body.Close()
 
 		response := &responses.CategoriesResponse{}
 		err = json.NewDecoder(resp.Body).Decode(&response)

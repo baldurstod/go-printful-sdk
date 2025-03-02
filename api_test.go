@@ -392,6 +392,7 @@ func TestGetSizes(t *testing.T) {
 		t.Error(err)
 		return
 	}
+	defer resp.Body.Close()
 
 	response := map[string]interface{}{}
 	err = json.NewDecoder(resp.Body).Decode(&response)
@@ -415,6 +416,7 @@ func TestGetPrices(t *testing.T) {
 		t.Error(err)
 		return
 	}
+	defer resp.Body.Close()
 
 	response := map[string]interface{}{}
 	err = json.NewDecoder(resp.Body).Decode(&response)
@@ -438,6 +440,7 @@ func TestGetVariantPrices2(t *testing.T) {
 		t.Error(err)
 		return
 	}
+	defer resp.Body.Close()
 
 	response := map[string]interface{}{}
 	err = json.NewDecoder(resp.Body).Decode(&response)
@@ -460,6 +463,7 @@ func TestGetVariants2(t *testing.T) {
 		t.Error(err)
 		return
 	}
+	defer resp.Body.Close()
 
 	response := map[string]interface{}{}
 	err = json.NewDecoder(resp.Body).Decode(&response)
@@ -483,6 +487,7 @@ func TestGetProduct2(t *testing.T) {
 		t.Error(err)
 		return
 	}
+	defer resp.Body.Close()
 
 	response := map[string]interface{}{}
 	err = json.NewDecoder(resp.Body).Decode(&response)

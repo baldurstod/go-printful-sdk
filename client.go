@@ -220,6 +220,7 @@ func (c *PrintfulClient) GetCatalogProducts(opts ...requestOption) ([]model.Prod
 			log.Println(err)
 			return nil, errors.New("unable to get printful response")
 		}
+		defer resp.Body.Close()
 
 		response := &responses.ProductsResponse{}
 		err = json.NewDecoder(resp.Body).Decode(&response)
@@ -263,6 +264,7 @@ func (c *PrintfulClient) GetCatalogVariants(productId int, opts ...requestOption
 			log.Println(err)
 			return nil, errors.New("unable to get printful response")
 		}
+		defer resp.Body.Close()
 
 		response := &responses.VariantsResponse{}
 		err = json.NewDecoder(resp.Body).Decode(&response)
@@ -306,6 +308,7 @@ func (c *PrintfulClient) GetProductPrices(productId int, opts ...requestOption) 
 			log.Println(err)
 			return nil, errors.New("unable to get printful response")
 		}
+		defer resp.Body.Close()
 
 		response := &responses.ProductPricesResponse{}
 		err = json.NewDecoder(resp.Body).Decode(&response)
@@ -347,6 +350,7 @@ func (c *PrintfulClient) GetVariantPrices(varianttId int, opts ...requestOption)
 		log.Println(err)
 		return nil, errors.New("unable to get printful response")
 	}
+	defer resp.Body.Close()
 
 	response := &responses.VariantPricesResponse{}
 	err = json.NewDecoder(resp.Body).Decode(&response)
@@ -383,6 +387,7 @@ func (c *PrintfulClient) GetCountries(opts ...requestOption) ([]model.Country, e
 			log.Println(err)
 			return nil, errors.New("unable to get printful response")
 		}
+		defer resp.Body.Close()
 
 		response := &responses.CountriesResponse{}
 		err = json.NewDecoder(resp.Body).Decode(&response)
@@ -427,6 +432,7 @@ func (c *PrintfulClient) GetMockupTemplates(productId int, opts ...requestOption
 			log.Println(err)
 			return nil, errors.New("unable to get printful response")
 		}
+		defer resp.Body.Close()
 
 		response := &responses.MockupTemplatesResponse{}
 		err = json.NewDecoder(resp.Body).Decode(&response)
@@ -471,6 +477,7 @@ func (c *PrintfulClient) GetMockupStyles(productId int, opts ...requestOption) (
 			log.Println(err)
 			return nil, errors.New("unable to get printful response")
 		}
+		defer resp.Body.Close()
 
 		response := &responses.MockupStylesResponse{}
 		err = json.NewDecoder(resp.Body).Decode(&response)
