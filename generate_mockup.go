@@ -58,7 +58,7 @@ func GenerateMockup(i image.Image, t *model.MockupTemplates) (image.Image, error
 		return nil, errors.New("template is nil")
 	}
 
-	mockup := image.NewRGBA(image.Rect(0, 0, int(t.TemplateWidth), int(t.TemplateHeight)))
+	mockup := image.NewNRGBA(image.Rect(0, 0, int(t.TemplateWidth), int(t.TemplateHeight)))
 
 	c := color.RGBA{R: 255, G: 255, B: 255, A: 255}
 	if t.BackgroundColor != "" {
@@ -66,12 +66,11 @@ func GenerateMockup(i image.Image, t *model.MockupTemplates) (image.Image, error
 		c, err = colorx.ParseHexColor(t.BackgroundColor)
 		if err != nil {
 			return nil, fmt.Errorf("failed to parse color: %s", t.BackgroundColor)
-
 		}
 	}
 
 	u := image.NewUniform(c)
-	draw.CatmullRom.Scale(mockup, mockup.Bounds(), u, mockup.Bounds(), draw.Over, nil)
+	draw.Draw(mockup, mockup.Bounds(), u, image.Pt(0, 0), draw.Over)
 
 	switch t.TemplatePositioning {
 	case TemplatePositioningBackground:
@@ -84,7 +83,6 @@ func GenerateMockup(i image.Image, t *model.MockupTemplates) (image.Image, error
 
 			draw.Draw(mockup, mockup.Bounds(), img, image.Pt(0, 0), draw.Src)
 			//t.TemplateWidth, t.TemplateHeight)
-
 		}
 	case TemplatePositioningOverlay:
 		img, err := FetchImage(t.ImageURL)
@@ -92,9 +90,9 @@ func GenerateMockup(i image.Image, t *model.MockupTemplates) (image.Image, error
 			return nil, err
 		}
 
-		draw.CatmullRom.Scale(mockup, mockup.Bounds(), img, img.Bounds(), draw.Over, nil)
+		draw.BiLinear.Scale(mockup, mockup.Bounds(), img, img.Bounds(), draw.Over, nil)
 	}
-	draw.CatmullRom.Scale(mockup, image.Rect(int(t.PrintAreaLeft), int(t.PrintAreaTop), int(t.PrintAreaLeft+t.PrintAreaWidth), int(t.PrintAreaTop+t.PrintAreaHeight)), i, i.Bounds(), draw.Over, nil)
+	draw.BiLinear.Scale(mockup, image.Rect(int(t.PrintAreaLeft), int(t.PrintAreaTop), int(t.PrintAreaLeft+t.PrintAreaWidth), int(t.PrintAreaTop+t.PrintAreaHeight)), i, i.Bounds(), draw.Over, nil)
 
 	return mockup, nil
 }
