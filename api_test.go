@@ -1,8 +1,11 @@
 package printfulsdk_test
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
+	"image/png"
 	"log"
 	"os"
 	"strconv"
@@ -494,4 +497,49 @@ func TestGetProduct2(t *testing.T) {
 		t.Error(err)
 		return
 	}
+}
+
+func TestFetchImage(t *testing.T) {
+	img, err := printfulsdk.FetchImage("https://files.cdn.printful.com/m/adidas_space_dyed_polo_shirt/medium/ghost/front/05_adidas_a591_ghost_front_base_whitebg.png")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	if img.Bounds().Max.X != 1000 ||
+		img.Bounds().Max.Y != 1000 {
+		t.Error(errors.New("wrong image size"))
+		return
+	}
+
+	log.Println(img)
+}
+
+func TestGenerateMockup(t *testing.T) {
+	inputImage, err := printfulsdk.FetchImage("https://en.wikipedia.org/static/images/icons/wikipedia.png")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	mockupTemplates, err := client.GetMockupTemplates(770)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	img, err := printfulsdk.GenerateMockup(inputImage, &mockupTemplates[6])
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	buf := bytes.Buffer{}
+	err = png.Encode(&buf, img)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	os.WriteFile("test.png", buf.Bytes(), 0666)
 }
