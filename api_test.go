@@ -539,8 +539,12 @@ func TestGenerateMockup(t *testing.T) {
 		return
 	}
 
+	e := png.Encoder{
+		CompressionLevel: png.BestSpeed,
+	}
+
 	buf := bytes.Buffer{}
-	err = png.Encode(&buf, img)
+	err = e.Encode(&buf, img)
 	if err != nil {
 		t.Error(err)
 		return
