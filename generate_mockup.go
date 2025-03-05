@@ -72,19 +72,29 @@ func GenerateMockup(i image.Image, t *model.MockupTemplates) (image.Image, error
 	u := image.NewUniform(c)
 	draw.Draw(mockup, mockup.Bounds(), u, image.Pt(0, 0), draw.Over)
 
-	switch t.TemplatePositioning {
-	case TemplatePositioningBackground:
+	if t.BackgroundURL != "" {
+		img, err := FetchImage(t.BackgroundURL)
+		if err != nil {
+			return nil, err
+		}
+		//draw.Draw(mockup, mockup.Bounds(), img, image.Pt(0, 0), draw.Src)
+		draw.BiLinear.Scale(mockup, mockup.Bounds(), img, img.Bounds(), draw.Over, nil)
+	}
 
-		if t.BackgroundURL != "" {
-			img, err := FetchImage(t.BackgroundURL)
+	if t.TemplatePositioning == TemplatePositioningBackground {
+		if t.ImageURL != "" {
+			img, err := FetchImage(t.ImageURL)
 			if err != nil {
 				return nil, err
 			}
-
-			draw.Draw(mockup, mockup.Bounds(), img, image.Pt(0, 0), draw.Src)
-			//t.TemplateWidth, t.TemplateHeight)
+			//draw.Draw(mockup, mockup.Bounds(), img, image.Pt(0, 0), draw.Src)
+			draw.BiLinear.Scale(mockup, mockup.Bounds(), img, img.Bounds(), draw.Over, nil)
 		}
-	case TemplatePositioningOverlay:
+	}
+
+	draw.BiLinear.Scale(mockup, image.Rect(int(t.PrintAreaLeft), int(t.PrintAreaTop), int(t.PrintAreaLeft+t.PrintAreaWidth), int(t.PrintAreaTop+t.PrintAreaHeight)), i, i.Bounds(), draw.Over, nil)
+
+	if t.TemplatePositioning == TemplatePositioningOverlay {
 		img, err := FetchImage(t.ImageURL)
 		if err != nil {
 			return nil, err
@@ -92,7 +102,6 @@ func GenerateMockup(i image.Image, t *model.MockupTemplates) (image.Image, error
 
 		draw.BiLinear.Scale(mockup, mockup.Bounds(), img, img.Bounds(), draw.Over, nil)
 	}
-	draw.BiLinear.Scale(mockup, image.Rect(int(t.PrintAreaLeft), int(t.PrintAreaTop), int(t.PrintAreaLeft+t.PrintAreaWidth), int(t.PrintAreaTop+t.PrintAreaHeight)), i, i.Bounds(), draw.Over, nil)
 
 	return mockup, nil
 }
