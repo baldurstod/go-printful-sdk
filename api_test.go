@@ -552,3 +552,33 @@ func TestGenerateMockup(t *testing.T) {
 
 	os.WriteFile("test.png", buf.Bytes(), 0666)
 }
+
+func TestCalculateShippingRates(t *testing.T) {
+	recipient := model.ShippingRatesAddress{
+		Address1:    "1 Main St",
+		CountryCode: "US",
+		StateCode:   "CA",
+		ZIP:         "95131",
+	}
+	items := []model.CatalogOrWarehouseShippingRateItem{
+		model.CatalogShippingRateItem{
+			Source:           "catalog",
+			Quantity:         1,
+			CatalogVariantID: 17008,
+		},
+	}
+
+	shippingRates, err := client.CalculateShippingRates(recipient, items, printfulsdk.WithCurrency("EUR"))
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	j, _ := json.MarshalIndent(&shippingRates, "", "\t")
+
+	err = os.WriteFile("./var/shippingrates.json", j, 0666)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+}

@@ -11,6 +11,7 @@ const (
 	OrderShippingMethod
 	OrderCustomization
 	OrderRetailCosts
+	OrderCurrency
 )
 
 func BuildRequestBody(o options, keys ...RequestBodyKey) map[string]interface{} {

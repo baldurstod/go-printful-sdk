@@ -69,6 +69,7 @@ func getOptions(opts ...requestOption) options {
 		limit:       0,
 		timeout:     time.Duration(-1),
 		fileVisible: true,
+		currency:    "USD",
 	}
 	for _, fn := range opts {
 		fn(&cfg)
