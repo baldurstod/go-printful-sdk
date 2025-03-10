@@ -561,7 +561,7 @@ func TestCalculateShippingRates(t *testing.T) {
 		ZIP:         "95131",
 	}
 	items := []model.CatalogOrWarehouseShippingRateItem{
-		model.CatalogShippingRateItem{
+		model.CatalogOrWarehouseShippingRateItem{
 			Source:           "catalog",
 			Quantity:         1,
 			CatalogVariantID: 17008,
