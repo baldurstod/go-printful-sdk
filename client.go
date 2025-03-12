@@ -196,7 +196,7 @@ func buildURL(path string, o options) (string, error) {
 	return u.String(), nil
 }
 
-func (c *PrintfulClient) GetCatalogProducts(opts ...requestOption) ([]model.Product, error) {
+func (c *PrintfulClient) GetCatalogProducts(opts ...RequestOption) ([]model.Product, error) {
 	opt := getOptions(opts...)
 
 	products := make([]model.Product, 0, 400)
@@ -242,7 +242,7 @@ func (c *PrintfulClient) GetCatalogProducts(opts ...requestOption) ([]model.Prod
 	return products, nil
 }
 
-func (c *PrintfulClient) GetCatalogVariants(productId int, opts ...requestOption) ([]model.Variant, error) {
+func (c *PrintfulClient) GetCatalogVariants(productId int, opts ...RequestOption) ([]model.Variant, error) {
 	opt := getOptions(opts...)
 
 	variants := make([]model.Variant, 0, 10)
@@ -286,7 +286,7 @@ func (c *PrintfulClient) GetCatalogVariants(productId int, opts ...requestOption
 	return variants, nil
 }
 
-func (c *PrintfulClient) GetProductPrices(productId int, opts ...requestOption) (*model.ProductPrices, error) {
+func (c *PrintfulClient) GetProductPrices(productId int, opts ...RequestOption) (*model.ProductPrices, error) {
 	opt := getOptions(opts...)
 
 	prices := model.ProductPrices{}
@@ -334,7 +334,7 @@ func (c *PrintfulClient) GetProductPrices(productId int, opts ...requestOption) 
 	return &prices, nil
 }
 
-func (c *PrintfulClient) GetVariantPrices(varianttId int, opts ...requestOption) (*model.VariantPrice, error) {
+func (c *PrintfulClient) GetVariantPrices(varianttId int, opts ...RequestOption) (*model.VariantPrice, error) {
 	opt := getOptions(opts...)
 
 	var ctx context.Context
@@ -364,7 +364,7 @@ func (c *PrintfulClient) GetVariantPrices(varianttId int, opts ...requestOption)
 	return &response.Data, nil
 }
 
-func (c *PrintfulClient) GetCountries(opts ...requestOption) ([]model.Country, error) {
+func (c *PrintfulClient) GetCountries(opts ...RequestOption) ([]model.Country, error) {
 	opt := getOptions(opts...)
 
 	countries := make([]model.Country, 0, 200)
@@ -409,7 +409,7 @@ func (c *PrintfulClient) GetCountries(opts ...requestOption) ([]model.Country, e
 	return countries, nil
 }
 
-func (c *PrintfulClient) GetMockupTemplates(productId int, opts ...requestOption) ([]model.MockupTemplates, error) {
+func (c *PrintfulClient) GetMockupTemplates(productId int, opts ...RequestOption) ([]model.MockupTemplates, error) {
 	opt := getOptions(opts...)
 
 	templates := make([]model.MockupTemplates, 0, 10)
@@ -454,7 +454,7 @@ func (c *PrintfulClient) GetMockupTemplates(productId int, opts ...requestOption
 	return templates, nil
 }
 
-func (c *PrintfulClient) GetMockupStyles(productId int, opts ...requestOption) ([]model.MockupStyles, error) {
+func (c *PrintfulClient) GetMockupStyles(productId int, opts ...RequestOption) ([]model.MockupStyles, error) {
 	opt := getOptions(opts...)
 
 	styles := make([]model.MockupStyles, 0, 10)

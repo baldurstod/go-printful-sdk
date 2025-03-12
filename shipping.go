@@ -11,7 +11,7 @@ import (
 	"github.com/baldurstod/go-printful-sdk/model/responses"
 )
 
-func (c *PrintfulClient) CalculateShippingRates(recipient model.ShippingRatesAddress, items []model.CatalogOrWarehouseShippingRateItem, opts ...requestOption) ([]model.ShippingRate, error) {
+func (c *PrintfulClient) CalculateShippingRates(recipient model.ShippingRatesAddress, items []model.CatalogOrWarehouseShippingRateItem, opts ...RequestOption) ([]model.ShippingRate, error) {
 	opt := getOptions(opts...)
 
 	var ctx context.Context

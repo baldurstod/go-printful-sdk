@@ -11,7 +11,7 @@ import (
 	"github.com/baldurstod/go-printful-sdk/model/responses"
 )
 
-func (c *PrintfulClient) CreateOrder(recipient model.Address, items []model.CatalogItem, opts ...requestOption) (*model.Order, error) {
+func (c *PrintfulClient) CreateOrder(recipient model.Address, items []model.CatalogItem, opts ...RequestOption) (*model.Order, error) {
 	opt := getOptions(opts...)
 
 	var ctx context.Context

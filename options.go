@@ -58,13 +58,13 @@ type options struct {
 	orderRetailCosts    *model.RetailCosts2
 }
 
-type requestOption func(*options)
+type RequestOption func(*options)
 
-func GetOptions(opts ...requestOption) options {
+func GetOptions(opts ...RequestOption) options {
 	return getOptions(opts...)
 }
 
-func getOptions(opts ...requestOption) options {
+func getOptions(opts ...RequestOption) options {
 	cfg := options{
 		limit:       0,
 		timeout:     time.Duration(-1),
@@ -78,127 +78,127 @@ func getOptions(opts ...requestOption) options {
 	return cfg
 }
 
-func WithOffset(offset uint) requestOption {
+func WithOffset(offset uint) RequestOption {
 	return func(o *options) {
 		o.offset = offset
 	}
 }
 
-func WithLimit(limit uint) requestOption {
+func WithLimit(limit uint) RequestOption {
 	return func(o *options) {
 		o.limit = limit
 	}
 }
 
-func WithCategories(categories ...int) requestOption {
+func WithCategories(categories ...int) RequestOption {
 	return func(o *options) {
 		o.categories = append(o.categories, categories...)
 	}
 }
 
-func WithColors(colors ...string) requestOption {
+func WithColors(colors ...string) RequestOption {
 	return func(o *options) {
 		o.colors = append(o.colors, colors...)
 	}
 }
 
-func WithPlacements(placements ...string) requestOption {
+func WithPlacements(placements ...string) RequestOption {
 	return func(o *options) {
 		o.placements = append(o.placements, placements...)
 	}
 }
 
-func WithOnlyNew() requestOption {
+func WithOnlyNew() RequestOption {
 	return func(o *options) {
 		o.new = true
 	}
 }
 
-func WithSellingRegionName(sellingRegionName string) requestOption {
+func WithSellingRegionName(sellingRegionName string) RequestOption {
 	return func(o *options) {
 		o.sellingRegionName = sellingRegionName
 	}
 }
 
-func WithCurrency(currency string) requestOption {
+func WithCurrency(currency string) RequestOption {
 	return func(o *options) {
 		o.currency = currency
 	}
 }
 
-func WithSortDirection(sortDirection SortDirection) requestOption {
+func WithSortDirection(sortDirection SortDirection) RequestOption {
 	return func(o *options) {
 		o.sortDirection = sortDirection
 	}
 }
 
-func WithSortType(sortType SortType) requestOption {
+func WithSortType(sortType SortType) RequestOption {
 	return func(o *options) {
 		o.sortType = sortType
 	}
 }
 
-func WithTechniques(techniques ...Technique) requestOption {
+func WithTechniques(techniques ...Technique) RequestOption {
 	return func(o *options) {
 		o.techniques = append(o.techniques, techniques...)
 	}
 }
 
-func WithLanguage(language string) requestOption {
+func WithLanguage(language string) RequestOption {
 	return func(o *options) {
 		o.language = language
 	}
 }
 
-func WithTimeout(timeout time.Duration) requestOption {
+func WithTimeout(timeout time.Duration) RequestOption {
 	return func(o *options) {
 		o.timeout = timeout
 	}
 }
 
-func SetFileRole(role string) requestOption {
+func SetFileRole(role string) RequestOption {
 	return func(o *options) {
 		o.fileRole = role
 	}
 }
 
-func SetURL(url string) requestOption {
+func SetURL(url string) RequestOption {
 	return func(o *options) {
 		o.url = url
 	}
 }
 
-func SetFilename(filename string) requestOption {
+func SetFilename(filename string) RequestOption {
 	return func(o *options) {
 		o.filename = filename
 	}
 }
 
-func SetFileVisible(visible bool) requestOption {
+func SetFileVisible(visible bool) RequestOption {
 	return func(o *options) {
 		o.fileVisible = visible
 	}
 }
 
-func SetOrderExternalID(externalID string) requestOption {
+func SetOrderExternalID(externalID string) RequestOption {
 	return func(o *options) {
 		o.orderExternalID = externalID
 	}
 }
 
-func SetOrderShippingMethod(shippingMethod string) requestOption {
+func SetOrderShippingMethod(shippingMethod string) RequestOption {
 	return func(o *options) {
 		o.orderShippingMethod = shippingMethod
 	}
 }
 
-func SetOrderCustomization(customization *model.Customization) requestOption {
+func SetOrderCustomization(customization *model.Customization) RequestOption {
 	return func(o *options) {
 		o.orderCustomization = customization
 	}
 }
 
-func SetOrderRetailCosts(retailCosts *model.RetailCosts2) requestOption {
+func SetOrderRetailCosts(retailCosts *model.RetailCosts2) RequestOption {
 	return func(o *options) {
 		o.orderRetailCosts = retailCosts
 	}

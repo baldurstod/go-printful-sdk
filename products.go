@@ -11,7 +11,7 @@ import (
 	"github.com/baldurstod/go-printful-sdk/model/responses"
 )
 
-func (c *PrintfulClient) GetCatalogProduct(productId int, opts ...requestOption) (*model.Product, error) {
+func (c *PrintfulClient) GetCatalogProduct(productId int, opts ...RequestOption) (*model.Product, error) {
 	opt := getOptions(opts...)
 
 	var ctx context.Context

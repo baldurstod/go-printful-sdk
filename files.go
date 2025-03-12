@@ -11,7 +11,7 @@ import (
 	"github.com/baldurstod/go-printful-sdk/model/responses"
 )
 
-func (c *PrintfulClient) AddFile(url string, opts ...requestOption) (*model.File, error) {
+func (c *PrintfulClient) AddFile(url string, opts ...RequestOption) (*model.File, error) {
 	opt := getOptions(opts...)
 
 	var ctx context.Context

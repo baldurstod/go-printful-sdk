@@ -10,7 +10,7 @@ import (
 	"github.com/baldurstod/go-printful-sdk/model/responses"
 )
 
-func (c *PrintfulClient) GetCatalogCategories(opts ...requestOption) ([]model.Category, error) {
+func (c *PrintfulClient) GetCatalogCategories(opts ...RequestOption) ([]model.Category, error) {
 	opt := getOptions(opts...)
 
 	categories := make([]model.Category, 0, 400)
