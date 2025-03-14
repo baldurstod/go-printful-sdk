@@ -582,3 +582,39 @@ func TestCalculateShippingRates(t *testing.T) {
 		return
 	}
 }
+
+func TestGetOrder(t *testing.T) {
+	id := 118114423
+	order, err := client.GetOrder(id)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	j, _ := json.MarshalIndent(&order, "", "\t")
+
+	err = os.WriteFile("./var/order_"+strconv.Itoa(id)+".json", j, 0666)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+}
+
+func TestGetOrderItem(t *testing.T) {
+	orderID := 118114423
+	itemID := 99797556
+
+	order, err := client.GetOrderItem(orderID, itemID)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	j, _ := json.MarshalIndent(&order, "", "\t")
+
+	err = os.WriteFile("./var/orderitem_"+strconv.Itoa(itemID)+".json", j, 0666)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+}

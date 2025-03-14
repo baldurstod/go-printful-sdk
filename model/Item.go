@@ -11,3 +11,5 @@ type Item struct {
 }
 
 type PlacementsList = []Placement
+
+type ItemReadonly = Item
