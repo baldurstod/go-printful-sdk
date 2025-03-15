@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"net/url"
 	"strconv"
 
 	"github.com/baldurstod/go-printful-sdk/model"
@@ -47,7 +48,22 @@ func (c *PrintfulClient) CreateOrder(recipient model.Address, items []model.Cata
 	return &response.Data, nil
 }
 
-func (c *PrintfulClient) GetOrder(id int, opts ...RequestOption) (*model.Order, error) {
+// Returns order/item id or external id depending on the parameter type
+func getId(id any) (string, error) {
+	switch id := id.(type) {
+	case int:
+		return strconv.Itoa(id), nil
+	case string:
+		return "@" + url.PathEscape(id), nil
+	default:
+		return "", errors.New("order type must be int or string")
+	}
+}
+
+// GetOrder return the printful order by id or external id
+// if orderID is an integer, returns the order by printful id
+// if orderID is a string, returns the order by external id
+func (c *PrintfulClient) GetOrder(orderID any, opts ...RequestOption) (*model.Order, error) {
 	opt := getOptions(opts...)
 
 	var ctx context.Context
@@ -57,7 +73,13 @@ func (c *PrintfulClient) GetOrder(id int, opts ...RequestOption) (*model.Order, 
 		defer cancel()
 	}
 
-	u, _ := buildURL("https://api.printful.com/v2/orders/"+strconv.Itoa(id), opt)
+	id, err := getId(orderID)
+	if err != nil {
+		log.Println(err)
+		return nil, fmt.Errorf("error while formatting order id in GetOrder: %w", err)
+	}
+
+	u, _ := buildURL("https://api.printful.com/v2/orders/"+id, opt)
 	resp, err := c.Get(u, nil, ctx)
 	if err != nil {
 		log.Println(err)
@@ -74,7 +96,7 @@ func (c *PrintfulClient) GetOrder(id int, opts ...RequestOption) (*model.Order, 
 	return &response.Data, nil
 }
 
-func (c *PrintfulClient) GetOrderItem(orderID int, itemID int, opts ...RequestOption) (*model.CatalogItemReadonly, error) {
+func (c *PrintfulClient) GetOrderItem(orderID any, itemID any, opts ...RequestOption) (*model.CatalogItemReadonly, error) {
 	opt := getOptions(opts...)
 
 	var ctx context.Context
@@ -84,7 +106,19 @@ func (c *PrintfulClient) GetOrderItem(orderID int, itemID int, opts ...RequestOp
 		defer cancel()
 	}
 
-	u, _ := buildURL("https://api.printful.com/v2/orders/"+strconv.Itoa(orderID)+"/order-items/"+strconv.Itoa(itemID), opt)
+	id, err := getId(orderID)
+	if err != nil {
+		log.Println(err)
+		return nil, fmt.Errorf("error while formatting order id in GetOrderItem: %w", err)
+	}
+
+	id2, err := getId(itemID)
+	if err != nil {
+		log.Println(err)
+		return nil, fmt.Errorf("error while formatting item id in GetOrderItem: %w", err)
+	}
+
+	u, _ := buildURL("https://api.printful.com/v2/orders/"+id+"/order-items/"+id2, opt)
 	resp, err := c.Get(u, nil, ctx)
 	if err != nil {
 		log.Println(err)

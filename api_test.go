@@ -600,6 +600,23 @@ func TestGetOrder(t *testing.T) {
 	}
 }
 
+func TestGetOrderExternalID(t *testing.T) {
+	id := "NTMP9KK1E13A"
+	order, err := client.GetOrder(id)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	j, _ := json.MarshalIndent(&order, "", "\t")
+
+	err = os.WriteFile("./var/order_@"+id+".json", j, 0666)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+}
+
 func TestGetOrderItem(t *testing.T) {
 	orderID := 118114423
 	itemID := 99797556
@@ -612,7 +629,25 @@ func TestGetOrderItem(t *testing.T) {
 
 	j, _ := json.MarshalIndent(&order, "", "\t")
 
-	err = os.WriteFile("./var/orderitem_"+strconv.Itoa(itemID)+".json", j, 0666)
+	err = os.WriteFile("./var/order_"+strconv.Itoa(orderID)+"_item_"+strconv.Itoa(itemID)+".json", j, 0666)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+}
+func TestGetOrderItemExternalID(t *testing.T) {
+	orderID := "NTMP9KK1E13A"
+	itemID := "Z6IMZJ2WPQ8L"
+
+	order, err := client.GetOrderItem(orderID, itemID)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	j, _ := json.MarshalIndent(&order, "", "\t")
+
+	err = os.WriteFile("./var/order_"+orderID+"_item_"+itemID+".json", j, 0666)
 	if err != nil {
 		t.Error(err)
 		return
