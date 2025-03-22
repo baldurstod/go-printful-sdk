@@ -37,5 +37,5 @@ func (c *PrintfulClient) GetCatalogProduct(productId int, opts ...RequestOption)
 		return nil, errors.New("unable to decode printful response")
 	}
 
-	return &response.Data, nil
+	return &response.Data.Product, nil
 }

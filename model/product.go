@@ -1,5 +1,10 @@
 package model
 
+type ProductInfo struct {
+	Product `bson:"inline" mapstructure:",squash"`
+	Links   ProductLinks `json:"_links" bson:"_links" mapstructure:"_links"`
+}
+
 type Product struct {
 	ID                int                `json:"id" bson:"id" mapstructure:"id"`
 	MainCategoryID    int                `json:"main_category_id" bson:"main_category_id" mapstructure:"main_category_id"`
@@ -17,7 +22,6 @@ type Product struct {
 	Techniques        []Technique        `json:"techniques" bson:"techniques" mapstructure:"techniques"`
 	Placements        []ProductPlacement `json:"placements" bson:"placements" mapstructure:"placements"`
 	ProductOptions    []CatalogOption    `json:"product_options" bson:"product_options" mapstructure:"product_options"`
-	Links             ProductLinks       `json:"_links" bson:"_links" mapstructure:"_links"`
 }
 
 type ProductPlacement struct {

@@ -229,7 +229,9 @@ func (c *PrintfulClient) GetCatalogProducts(opts ...RequestOption) ([]model.Prod
 			return nil, errors.New("unable to decode printful response")
 		}
 
-		products = append(products, response.Data...)
+		for _, p := range response.Data {
+			products = append(products, p.Product)
+		}
 
 		next := response.Paging.Offset + response.Paging.Limit
 		if next >= response.Paging.Total {
