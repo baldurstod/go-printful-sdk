@@ -504,8 +504,24 @@ func TestGetProduct2(t *testing.T) {
 	}
 }
 
-func TestFetchImage(t *testing.T) {
+func TestFetchImagePNG(t *testing.T) {
 	img, err := printfulsdk.FetchImage("https://files.cdn.printful.com/m/adidas_space_dyed_polo_shirt/medium/ghost/front/05_adidas_a591_ghost_front_base_whitebg.png")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	if img.Bounds().Max.X != 1000 ||
+		img.Bounds().Max.Y != 1000 {
+		t.Error(errors.New("wrong image size"))
+		return
+	}
+
+	log.Println(img)
+}
+
+func TestFetchImageJpeg(t *testing.T) {
+	img, err := printfulsdk.FetchImage("https://files.cdn.printful.com/m/Cotton_Heritage_MC1086/medium/bgimages/flat_zoomed/01_chmc1086_carbongrey.jpg?v=1716875258")
 	if err != nil {
 		t.Error(err)
 		return

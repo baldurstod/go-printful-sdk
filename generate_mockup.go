@@ -6,7 +6,8 @@ import (
 	"fmt"
 	"image"
 	"image/color"
-	"image/png"
+	_ "image/jpeg"
+	_ "image/png"
 	"io"
 	"net/http"
 
@@ -33,7 +34,7 @@ func FetchImage(url string) (image.Image, error) {
 	}
 	resp.Body.Close()
 
-	config, err := png.DecodeConfig(bytes.NewReader(data))
+	config, _, err := image.DecodeConfig(bytes.NewReader(data))
 	if err != nil {
 		return nil, err
 	}
@@ -42,7 +43,7 @@ func FetchImage(url string) (image.Image, error) {
 		return nil, fmt.Errorf("image is too large: %dx%d", config.Width, config.Height)
 	}
 
-	img, err := png.Decode(bytes.NewReader(data))
+	img, _, err := image.Decode(bytes.NewReader(data))
 	if err != nil {
 		return nil, err
 	}
