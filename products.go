@@ -21,9 +21,14 @@ func (c *PrintfulClient) GetCatalogProduct(productId int, opts ...RequestOption)
 		defer cancel()
 	}
 
+	headers := map[string]string{}
+	if opt.language != "" {
+		headers["X-PF-Language"] = opt.language
+	}
+
 	u, _ := buildURL("https://api.printful.com/v2/catalog-products/"+strconv.Itoa(productId), opt)
 	log.Println(u)
-	resp, err := c.Get(u, nil, ctx)
+	resp, err := c.Get(u, headers, ctx)
 	if err != nil {
 		log.Println(err)
 		return nil, errors.New("unable to get printful response")

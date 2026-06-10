@@ -26,8 +26,13 @@ func (c *PrintfulClient) CalculateShippingRates(recipient model.ShippingRatesAdd
 	body["recipient"] = recipient
 	body["order_items"] = items
 
+	headers := map[string]string{}
+	if opt.language != "" {
+		headers["X-PF-Language"] = opt.language
+	}
+
 	u := "https://api.printful.com/v2/shipping-rates"
-	resp, err := c.Post(u, nil, body, ctx)
+	resp, err := c.Post(u, headers, body, ctx)
 	if err != nil {
 		log.Println(err)
 		return nil, fmt.Errorf("post returned an error in CalculateShippingRates: %w", err)

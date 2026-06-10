@@ -371,7 +371,7 @@ func getItem() model.CatalogItem {
 }
 
 func TestGetCategories(t *testing.T) {
-	products, err := client.GetCatalogCategories()
+	products, err := client.GetCatalogCategories(printfulsdk.WithLanguage("fr_FR"))
 	if err != nil {
 		t.Error(err)
 		return

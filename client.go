@@ -211,11 +211,16 @@ func (c *PrintfulClient) GetCatalogProducts(opts ...RequestOption) ([]model.Prod
 	opt.offset = 0
 	opt.limit = 100
 
+	headers := map[string]string{}
+	if opt.language != "" {
+		headers["X-PF-Language"] = opt.language
+	}
+
 	for {
 
 		u, _ := buildURL(PRINTFUL_CATALOG_PRODUCTS, opt)
 		log.Println(u)
-		resp, err := c.Get(u, nil, ctx)
+		resp, err := c.Get(u, headers, ctx)
 		if err != nil {
 			log.Println(err)
 			return nil, errors.New("unable to get printful response")
@@ -259,9 +264,14 @@ func (c *PrintfulClient) GetCatalogVariants(productId int, opts ...RequestOption
 	opt.offset = 0
 	opt.limit = 100
 
+	headers := map[string]string{}
+	if opt.language != "" {
+		headers["X-PF-Language"] = opt.language
+	}
+
 	for {
 		u, _ := buildURL("https://api.printful.com/v2/catalog-products/"+strconv.Itoa(productId)+"/catalog-variants", opt)
-		resp, err := c.Get(u, nil, ctx)
+		resp, err := c.Get(u, headers, ctx)
 		if err != nil {
 			log.Println(err)
 			return nil, errors.New("unable to get printful response")
@@ -303,9 +313,14 @@ func (c *PrintfulClient) GetProductPrices(productId int, opts ...RequestOption) 
 	opt.offset = 0
 	opt.limit = 100
 
+	headers := map[string]string{}
+	if opt.language != "" {
+		headers["X-PF-Language"] = opt.language
+	}
+
 	for {
 		u, _ := buildURL("https://api.printful.com/v2/catalog-products/"+strconv.Itoa(productId)+"/prices", opt)
-		resp, err := c.Get(u, nil, ctx)
+		resp, err := c.Get(u, headers, ctx)
 		if err != nil {
 			log.Println(err)
 			return nil, errors.New("unable to get printful response")
@@ -346,8 +361,13 @@ func (c *PrintfulClient) GetVariantPrices(varianttId int, opts ...RequestOption)
 		defer cancel()
 	}
 
+	headers := map[string]string{}
+	if opt.language != "" {
+		headers["X-PF-Language"] = opt.language
+	}
+
 	u, _ := buildURL("https://api.printful.com/v2/catalog-variants/"+strconv.Itoa(varianttId)+"/prices", opt)
-	resp, err := c.Get(u, nil, ctx)
+	resp, err := c.Get(u, headers, ctx)
 	if err != nil {
 		log.Println(err)
 		return nil, errors.New("unable to get printful response")
@@ -381,10 +401,15 @@ func (c *PrintfulClient) GetCountries(opts ...RequestOption) ([]model.Country, e
 	opt.offset = 0
 	opt.limit = 100
 
+	headers := map[string]string{}
+	if opt.language != "" {
+		headers["X-PF-Language"] = opt.language
+	}
+
 	for {
 		u, _ := buildURL(PRINTFUL_COUNTRIES, opt)
 		log.Println(u)
-		resp, err := c.Get(u, nil, ctx)
+		resp, err := c.Get(u, headers, ctx)
 		if err != nil {
 			log.Println(err)
 			return nil, errors.New("unable to get printful response")
@@ -426,10 +451,15 @@ func (c *PrintfulClient) GetMockupTemplates(productId int, opts ...RequestOption
 	opt.offset = 0
 	opt.limit = 100
 
+	headers := map[string]string{}
+	if opt.language != "" {
+		headers["X-PF-Language"] = opt.language
+	}
+
 	for {
 		u, _ := buildURL("https://api.printful.com/v2/catalog-products/"+strconv.Itoa(productId)+"/mockup-templates", opt)
 		log.Println(u)
-		resp, err := c.Get(u, nil, ctx)
+		resp, err := c.Get(u, headers, ctx)
 		if err != nil {
 			log.Println(err)
 			return nil, errors.New("unable to get printful response")
@@ -471,10 +501,15 @@ func (c *PrintfulClient) GetMockupStyles(productId int, opts ...RequestOption) (
 	opt.offset = 0
 	opt.limit = 100
 
+	headers := map[string]string{}
+	if opt.language != "" {
+		headers["X-PF-Language"] = opt.language
+	}
+
 	for {
 		u, _ := buildURL("https://api.printful.com/v2/catalog-products/"+strconv.Itoa(productId)+"/mockup-styles", opt)
 		log.Println(u)
-		resp, err := c.Get(u, nil, ctx)
+		resp, err := c.Get(u, headers, ctx)
 		if err != nil {
 			log.Println(err)
 			return nil, errors.New("unable to get printful response")

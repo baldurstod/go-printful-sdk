@@ -31,8 +31,13 @@ func (c *PrintfulClient) CreateOrder(recipient model.Address, items []model.Cata
 	//b, _ := json.MarshalIndent(body, "", "  ")
 	//log.Println(string(b))
 
+	headers := map[string]string{}
+	if opt.language != "" {
+		headers["X-PF-Language"] = opt.language
+	}
+
 	u := "https://api.printful.com/v2/orders"
-	resp, err := c.Post(u, nil, body, ctx)
+	resp, err := c.Post(u, headers, body, ctx)
 	if err != nil {
 		log.Println(err)
 		return nil, fmt.Errorf("post returned an error in CreateOrder: %w", err)
@@ -79,8 +84,13 @@ func (c *PrintfulClient) GetOrder(orderID any, opts ...RequestOption) (*model.Or
 		return nil, fmt.Errorf("error while formatting order id in GetOrder: %w", err)
 	}
 
+	headers := map[string]string{}
+	if opt.language != "" {
+		headers["X-PF-Language"] = opt.language
+	}
+
 	u, _ := buildURL("https://api.printful.com/v2/orders/"+id, opt)
-	resp, err := c.Get(u, nil, ctx)
+	resp, err := c.Get(u, headers, ctx)
 	if err != nil {
 		log.Println(err)
 		return nil, fmt.Errorf("get returned an error in GetOrder: %w", err)
@@ -118,8 +128,13 @@ func (c *PrintfulClient) GetOrderItem(orderID any, itemID any, opts ...RequestOp
 		return nil, fmt.Errorf("error while formatting item id in GetOrderItem: %w", err)
 	}
 
+	headers := map[string]string{}
+	if opt.language != "" {
+		headers["X-PF-Language"] = opt.language
+	}
+
 	u, _ := buildURL("https://api.printful.com/v2/orders/"+id+"/order-items/"+id2, opt)
-	resp, err := c.Get(u, nil, ctx)
+	resp, err := c.Get(u, headers, ctx)
 	if err != nil {
 		log.Println(err)
 		return nil, fmt.Errorf("get returned an error in GetOrderItem: %w", err)

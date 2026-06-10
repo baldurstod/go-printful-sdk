@@ -25,8 +25,13 @@ func (c *PrintfulClient) AddFile(url string, opts ...RequestOption) (*model.File
 
 	body := BuildRequestBody(opt, FileRole, URL, Filename, FileVisible)
 
+	headers := map[string]string{}
+	if opt.language != "" {
+		headers["X-PF-Language"] = opt.language
+	}
+
 	u := "https://api.printful.com/v2/files"
-	resp, err := c.Post(u, nil, body, ctx)
+	resp, err := c.Post(u, headers, body, ctx)
 	if err != nil {
 		log.Println(err)
 		return nil, fmt.Errorf("post returned an error in AddFile: %w", err)

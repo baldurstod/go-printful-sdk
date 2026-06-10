@@ -25,9 +25,14 @@ func (c *PrintfulClient) GetCatalogCategories(opts ...RequestOption) ([]model.Ca
 	opt.offset = 0
 	opt.limit = 100
 
+	headers := map[string]string{}
+	if opt.language != "" {
+		headers["X-PF-Language"] = opt.language
+	}
+
 	for {
 		u, _ := buildURL("https://api.printful.com/v2/catalog-categories", opt)
-		resp, err := c.Get(u, nil, ctx)
+		resp, err := c.Get(u, headers, ctx)
 		if err != nil {
 			log.Println(err)
 			return nil, errors.New("unable to get printful response")
