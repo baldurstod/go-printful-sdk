@@ -357,7 +357,7 @@ func getItem() model.CatalogItem {
 	item.Name = "Test create order"
 
 	placement := model.NewPlacement()
-	placement.Placement = "back_large_dtf"
+	placement.Placement = "back_dtf"
 	placement.Technique = "dtfilm"
 
 	layer := model.Layer{}
