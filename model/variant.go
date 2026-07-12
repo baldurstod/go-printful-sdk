@@ -10,16 +10,6 @@ type Variant struct {
 	Image            string         `json:"image" bson:"image" mapstructure:"image"`
 	Size             string         `json:"size" bson:"size" mapstructure:"size"`
 	Availability     []Availability `json:"availability" bson:"availability" mapstructure:"availability"`
-	Links            VariantLinks   `json:"_links" bson:"_links" mapstructure:"_links"`
-}
-
-type VariantLinks struct {
-	Self                Link `json:"self" bson:"self" mapstructure:"self"`
-	ProductDetails      Link `json:"product_details" bson:"product_details" mapstructure:"product_details"`
-	ProductVariants     Link `json:"product_variants" bson:"product_variants" mapstructure:"product_variants"`
-	VariantAvailability Link `json:"variant_availability" bson:"variant_availability" mapstructure:"variant_availability"`
-	VariantImages       Link `json:"variant_images" bson:"variant_images" mapstructure:"variant_images"`
-	VariantPrices       Link `json:"variant_prices" bson:"variant_prices" mapstructure:"variant_prices"`
 }
 
 type Availability struct {
