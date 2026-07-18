@@ -7,6 +7,7 @@ type ProductInfo struct {
 type Product struct {
 	ID                int                `json:"id" bson:"id" mapstructure:"id"`
 	MainCategoryID    int                `json:"main_category_id" bson:"main_category_id" mapstructure:"main_category_id"`
+	Categories        []int              `json:"categories" bson:"categories" mapstructure:"categories"`
 	Type              string             `json:"type" bson:"type" mapstructure:"type"`
 	Name              string             `json:"name" bson:"name" mapstructure:"name"`
 	Brand             string             `json:"brand" bson:"brand" mapstructure:"brand"`
