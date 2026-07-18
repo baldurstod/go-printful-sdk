@@ -235,6 +235,34 @@ func TestGetVariantImages(t *testing.T) {
 	}
 }
 
+func TestGetProductCategories(t *testing.T) {
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
+
+	productId := 842
+
+	token, err := getAuthToken()
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	client := printfulsdk.NewPrintfulClient(token)
+
+	products, err := client.GetProductCategories(productId, printfulsdk.WithSellingRegionName("new_zealand"))
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	j, _ := json.MarshalIndent(&products, "", "\t")
+
+	err = os.WriteFile("./var/product_"+strconv.Itoa(productId)+"_categories.json", j, 0666)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+}
+
 func TestGetCountries(t *testing.T) {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 
