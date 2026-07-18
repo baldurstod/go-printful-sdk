@@ -386,6 +386,39 @@ func (c *PrintfulClient) GetVariantPrices(varianttId int, opts ...RequestOption)
 	return &response.Data, nil
 }
 
+func (c *PrintfulClient) GetVariantImages(varianttId int, opts ...RequestOption) (*model.VariantImages, error) {
+	opt := getOptions(opts...)
+
+	var ctx context.Context
+	var cancel context.CancelFunc
+	if opt.timeout > 0 {
+		ctx, cancel = context.WithTimeout(context.Background(), opt.timeout)
+		defer cancel()
+	}
+
+	headers := map[string]string{}
+	if opt.language != "" {
+		headers["X-PF-Language"] = opt.language
+	}
+
+	u, _ := buildURL("https://api.printful.com/v2/catalog-variants/"+strconv.Itoa(varianttId)+"/images", opt)
+	resp, err := c.Get(u, headers, ctx)
+	if err != nil {
+		log.Println(err)
+		return nil, errors.New("unable to get printful response")
+	}
+	defer resp.Body.Close()
+
+	response := &responses.VariantImagesResponse{}
+	err = json.NewDecoder(resp.Body).Decode(&response)
+	if err != nil {
+		log.Println(err)
+		return nil, errors.New("unable to decode printful response")
+	}
+
+	return &response.Data, nil
+}
+
 func (c *PrintfulClient) GetCountries(opts ...RequestOption) ([]model.Country, error) {
 	opt := getOptions(opts...)
 
