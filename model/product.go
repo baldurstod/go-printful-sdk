@@ -13,6 +13,7 @@ type Product struct {
 	Brand             string             `json:"brand" bson:"brand" mapstructure:"brand"`
 	Model             string             `json:"model" bson:"model" mapstructure:"model"`
 	Image             string             `json:"image" bson:"image" mapstructure:"image"`
+	ImageWomen        string             `json:"image_women" bson:"image_women" mapstructure:"image_women"`
 	VariantCount      int                `json:"variant_count" bson:"variant_count" mapstructure:"variant_count"`
 	CatalogVariantIDs []int              `json:"catalog_variant_ids" bson:"catalog_variant_ids"`
 	IsDiscontinued    bool               `json:"is_discontinued" bson:"is_discontinued" mapstructure:"is_discontinued"`

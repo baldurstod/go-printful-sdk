@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"image/png"
 	"log"
 	"os"
@@ -126,6 +127,47 @@ func TestGetProduct(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 		return
+	}
+}
+
+func TestGetProduct3(t *testing.T) {
+	productId := 823
+	_, err := client.GetCatalogProduct(productId)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	productImages, err := client.GetProductImages(productId)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	styles, err := client.GetMockupStyles(productId)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	styleId := -1
+
+StyleLoop:
+	for _, style := range styles {
+		for _, mockupStyle := range style.MockupStyles {
+			if mockupStyle.CategoryName == "Women's" && mockupStyle.ViewName == "Front" {
+				styleId = mockupStyle.Id
+				break StyleLoop
+			}
+		}
+	}
+
+	for _, productImage := range productImages {
+		for _, image := range productImage.Images {
+			if image.MockupStyleId == styleId {
+				fmt.Println(image.ImageUrl)
+			}
+		}
 	}
 }
 
@@ -355,13 +397,13 @@ func TestGetProductImages(t *testing.T) {
 	client := printfulsdk.NewPrintfulClient(token)
 
 	productId := 823
-	templates, err := client.GetProductImages(productId, printfulsdk.WithLimit(10))
+	images, err := client.GetProductImages(productId, printfulsdk.WithLimit(10))
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
-	j, _ := json.MarshalIndent(&templates, "", "\t")
+	j, _ := json.MarshalIndent(&images, "", "\t")
 
 	err = os.WriteFile("./var/product_images_"+strconv.Itoa(productId)+".json", j, 0666)
 	if err != nil {
