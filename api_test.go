@@ -238,7 +238,7 @@ func TestGetVariantImages(t *testing.T) {
 func TestGetProductCategories(t *testing.T) {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 
-	productId := 842
+	productId := 713
 
 	token, err := getAuthToken()
 	if err != nil {
@@ -290,6 +290,7 @@ func TestGetCountries(t *testing.T) {
 }
 
 func TestGetTemplates(t *testing.T) {
+	productId := 412
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 
 	token, err := getAuthToken()
@@ -300,7 +301,7 @@ func TestGetTemplates(t *testing.T) {
 
 	client := printfulsdk.NewPrintfulClient(token)
 
-	templates, err := client.GetMockupTemplates(403)
+	templates, err := client.GetMockupTemplates(productId)
 	if err != nil {
 		t.Error(err)
 		return
@@ -308,7 +309,7 @@ func TestGetTemplates(t *testing.T) {
 
 	j, _ := json.MarshalIndent(&templates, "", "\t")
 
-	err = os.WriteFile("./var/mockup_templates.json", j, 0666)
+	err = os.WriteFile("./var/mockup_templates_"+strconv.Itoa(productId)+".json", j, 0666)
 	if err != nil {
 		t.Error(err)
 		return
@@ -336,6 +337,33 @@ func TestGetMockupStyles(t *testing.T) {
 	j, _ := json.MarshalIndent(&templates, "", "\t")
 
 	err = os.WriteFile("./var/mockup_styles_"+strconv.Itoa(productId)+".json", j, 0666)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+}
+
+func TestGetProductImages(t *testing.T) {
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
+
+	token, err := getAuthToken()
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	client := printfulsdk.NewPrintfulClient(token)
+
+	productId := 823
+	templates, err := client.GetProductImages(productId, printfulsdk.WithLimit(10))
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	j, _ := json.MarshalIndent(&templates, "", "\t")
+
+	err = os.WriteFile("./var/product_images_"+strconv.Itoa(productId)+".json", j, 0666)
 	if err != nil {
 		t.Error(err)
 		return

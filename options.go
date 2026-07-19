@@ -56,6 +56,7 @@ type options struct {
 	orderShippingMethod string
 	orderCustomization  *model.Customization
 	orderRetailCosts    *model.RetailCosts2
+	defaultMockupStyles bool
 }
 
 type RequestOption func(*options)
@@ -201,5 +202,11 @@ func SetOrderCustomization(customization *model.Customization) RequestOption {
 func SetOrderRetailCosts(retailCosts *model.RetailCosts2) RequestOption {
 	return func(o *options) {
 		o.orderRetailCosts = retailCosts
+	}
+}
+
+func WithDefaultMockupStyles() RequestOption {
+	return func(o *options) {
+		o.defaultMockupStyles = true
 	}
 }

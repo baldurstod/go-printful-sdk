@@ -192,6 +192,10 @@ func buildURL(path string, o options) (string, error) {
 		q.Set("currency", o.currency)
 	}
 
+	if o.defaultMockupStyles != false {
+		q.Set("default_mockup_styles", "true")
+	}
+
 	u.RawQuery = q.Encode()
 	return u.String(), nil
 }
@@ -567,4 +571,57 @@ func (c *PrintfulClient) GetMockupStyles(productId int, opts ...RequestOption) (
 	}
 
 	return styles, nil
+}
+
+func (c *PrintfulClient) GetProductImages(productId int, opts ...RequestOption) ([]model.VariantImages, error) {
+	opt := getOptions(opts...)
+
+	images := make([]model.VariantImages, 0, 10)
+
+	var ctx context.Context
+	var cancel context.CancelFunc
+	if opt.timeout > 0 {
+		ctx, cancel = context.WithTimeout(context.Background(), opt.timeout)
+		defer cancel()
+	}
+
+	opt.offset = 0
+	if opt.limit == 0 {
+		opt.limit = 20
+
+	}
+
+	headers := map[string]string{}
+	if opt.language != "" {
+		headers["X-PF-Language"] = opt.language
+	}
+
+	for {
+		u, _ := buildURL("https://api.printful.com/v2/catalog-products/"+strconv.Itoa(productId)+"/images", opt)
+		log.Println(u)
+		resp, err := c.Get(u, headers, ctx)
+		if err != nil {
+			log.Println(err)
+			return nil, errors.New("unable to get printful response")
+		}
+		defer resp.Body.Close()
+
+		response := &responses.ProductImagesResponse{}
+		err = json.NewDecoder(resp.Body).Decode(&response)
+		if err != nil {
+			log.Println(err)
+			return nil, errors.New("unable to decode printful response")
+		}
+
+		images = append(images, response.Data...)
+
+		next := response.Paging.Offset + response.Paging.Limit
+		if next >= response.Paging.Total {
+			break
+		}
+		opt.offset = next
+		opt.limit = response.Paging.Limit
+	}
+
+	return images, nil
 }
