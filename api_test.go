@@ -10,6 +10,7 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -131,7 +132,7 @@ func TestGetProduct(t *testing.T) {
 }
 
 func TestGetProduct3(t *testing.T) {
-	productId := 823
+	productId := 71
 	_, err := client.GetCatalogProduct(productId)
 	if err != nil {
 		t.Error(err)
@@ -150,24 +151,32 @@ func TestGetProduct3(t *testing.T) {
 		return
 	}
 
-	styleId := -1
-
+	womenUrl := ""
 StyleLoop:
+	// Iterate the styles to find a women picture
 	for _, style := range styles {
 		for _, mockupStyle := range style.MockupStyles {
-			if mockupStyle.CategoryName == "Women's" && mockupStyle.ViewName == "Front" {
-				styleId = mockupStyle.Id
-				break StyleLoop
+			// Filter categories starting with "Women's" but not "Women's Lifestyle"
+			if strings.HasPrefix(mockupStyle.CategoryName, "Women's") && !strings.HasPrefix(mockupStyle.CategoryName, "Women's Lifestyle") && mockupStyle.ViewName == "Front" {
+				// Once we found a suitable style, check for pictures
+				for _, productImage := range productImages {
+					// Preferentially look for pictures of white color. If we don't find any, other colors will do
+					if productImage.Color != "White" && womenUrl != "" {
+						continue
+					}
+					for _, image := range productImage.Images {
+						if image.MockupStyleId == mockupStyle.Id {
+							womenUrl = image.ImageUrl
+							break StyleLoop
+						}
+					}
+				}
 			}
 		}
 	}
 
-	for _, productImage := range productImages {
-		for _, image := range productImage.Images {
-			if image.MockupStyleId == styleId {
-				fmt.Println(image.ImageUrl)
-			}
-		}
+	if womenUrl != "" {
+		fmt.Println(womenUrl)
 	}
 }
 
@@ -369,7 +378,7 @@ func TestGetMockupStyles(t *testing.T) {
 
 	client := printfulsdk.NewPrintfulClient(token)
 
-	productId := 823
+	productId := 71
 	templates, err := client.GetMockupStyles(productId)
 	if err != nil {
 		t.Error(err)
@@ -396,7 +405,7 @@ func TestGetProductImages(t *testing.T) {
 
 	client := printfulsdk.NewPrintfulClient(token)
 
-	productId := 823
+	productId := 71
 	images, err := client.GetProductImages(productId, printfulsdk.WithLimit(10))
 	if err != nil {
 		t.Error(err)
